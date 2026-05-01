@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 import json
+import ast
 from dotenv import load_dotenv
 from groq import Groq
 from elevenlabs.client import ElevenLabs
@@ -52,17 +53,17 @@ while True:
     CAPABILITIES:
     - You cannot browse the internet or access external services.
     - If asked to do so, say it may be available in a future update.
-    - Functins include [delete_convo]
+    - Functins list = [delete_convo]
 
     RESPONSE STRUCTURE:
-    - You have to respond in a json response.
-    - You can't go out of the json format or else the whole program, of which you are a part of, will fail.
-    - JSON has to be the response.
-    - Think of appropriate functions, if none of the functions are useful, return err as the response of the json format.
+    - You have to respond in a dictionary response.
+    - You can't go out of the dictionary format or else the whole program, of which you are a part of, will fail.
+    - Dictionary has to be the response.
+    - Think of appropriate functions, if none of the functions are useful, return err as the response of the dictionary format.
     - The format is, where the response is the part which the user cares about:
-      [{
+      {
         "function":"",
-        "response":""}]
+        "response":""}
     - The function part is case sensitive, and you cannot use any functin outside of the list provided.
     """
         messages = [
@@ -85,8 +86,8 @@ while True:
         model="llama-3.1-8b-instant",
         messages=messages
     )
-    content = response.choices[0].message.content
-    reply = content
+    reply = response.choices[0].message.content
+    reply_dic = ast.literal_eval(reply)
     
 
     audio = eleven_client.text_to_speech.convert(
