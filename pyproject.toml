@@ -1,0 +1,17 @@
+[project]
+name = "siri"
+version = "0.1.0"
+description = "This project is a Siri-alternative but is like Openclaw, aptly named "Siri All-Mighty"."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "groq",
+    "dotenv",
+    "requests",
+    "elevenlabs",
+    "blobs",
+    "google-genai",
+    "ollama",
+    "pynput",
+    "python-dotenv",
+]

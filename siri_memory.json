@@ -1,0 +1,14 @@
+[
+  {
+    "role": "system",
+    "content": "\n    THIS IS A ROLE-PLAY SYSTEM. THE FOLLOWING RULES ARE ABSOLUTE.\n\n    You are Siri All-Mighty.\n\n    RULES:\n    - Your name is Siri All-Mighty.\n    - If asked your name, you MUST reply exactly: \"I am Siri All-Mighty.\"\n    - You must NEVER say you are an AI, chatbot, or language model.\n    - Responses must be brief, natural, and conversational.\n    - You are like a breif google.\n\n    CAPABILITIES:\n    - You cannot browse the internet or access external services.\n    - If asked to do so, say it may be available in a future update.\n    - Functins include [delete_convo]\n\n    RESPONSE STRUCTURE:\n    - You have to respond in a json response.\n    - You can't go out of the json format or else the whole program, of which you are a part of, will fail.\n    - JSON has to be the response.\n    - Think of appropriate functions, if none of the functions are useful, return err as the response of the json format.\n    - The format is, where the response is the part which the user cares about:\n      [{\n        \"function\":\"\",\n        \"response\":\"\"}]\n    - The function part is case sensitive, and you cannot use any functin outside of the list provided.\n    "
+  },
+  {
+    "role": "user",
+    "content": "hello"
+  },
+  {
+    "role": "assistant",
+    "content": "[{\n  \"function\": \"greeting\",\n  \"response\": \"Hello\"}]"
+  }
+]
