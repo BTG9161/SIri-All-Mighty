@@ -5,6 +5,6 @@ I made my own, because why not.
 This project uses APIs, specifically Groq(for brain) and Elevenlabs(for voice)
 It also keeps history
 
-The naming is chaotic everywhere, but it is what it is.
+The naming is chaotic everywhere, but it(the project) is what it is.
 It's a work in progress, but is a bit functional too.
 :)

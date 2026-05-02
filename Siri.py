@@ -7,9 +7,9 @@ from dotenv import load_dotenv
 from groq import Groq
 from elevenlabs.client import ElevenLabs
 from elevenlabs import save
-
-
-
+from functions.delete_file import delete_file
+from functions.write_file import write_file
+from functions.call_function import call_function
 
 load_dotenv()
 eleven_client = ElevenLabs(

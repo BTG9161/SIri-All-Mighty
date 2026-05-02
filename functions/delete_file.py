@@ -12,6 +12,7 @@ def delete_file(working_directory=".", file_path=None ):
     with open(path_file) as file:
         os.remove(file)
 
+    return f"{file_path} deleted successfully."
 
 
 
