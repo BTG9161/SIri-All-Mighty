@@ -5,7 +5,7 @@ def write_file(working_directory=".", file_path=None, content=None):
     path_wd = Path(working_directory).resolve()
     path_d = Path(working_directory, file_path).resolve()
 
-    if not path_d.startswith(path_wd):
+    if path_wd not in path_d.parents and path_d != path_wd:
         return f'Error: Cannot write to "{file_path}" as it is outside the permitted working directory'
     
     if not os.path.exists(path_d):

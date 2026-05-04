@@ -53,7 +53,8 @@ while True:
     CAPABILITIES:
     - You cannot browse the internet or access external services.
     - If asked to do so, say it may be available in a future update.
-    - Functins list = [delete_convo]
+    - Functions list = [delete_file, write_file]
+    - Please **DO NOT** use any other function other than the ones in the Functions list!
 
     RESPONSE STRUCTURE:
     - You have to respond in a dictionary response.
@@ -61,20 +62,21 @@ while True:
     - Dictionary has to be the response.
     - Think of appropriate functions, if none of the functions are useful, return err as the response of the dictionary format.
     - The format is, where the response is the part which the user cares about:
-      {
-        "function":"",
+      {"function":"",
+        "file_path:"",
+        "working_directory:"",
+        "content:"",
         "response":""}
     - The function part is case sensitive, and you cannot use any functin outside of the list provided.
+    - Your first reponse must be "Hi, how one may be of service?", within the dictionary
+    - The working_directory is "." by default
+    - If you will use any function other than the given in the Functions list, the program will fail, and so will you.
     """
         messages = [
         {"role": "system", "content": system_prompt},
         ]
 
-    if os.path.exists(MEMORY_FILE):
-        messages.append({"role": "user", "content": prompt})
-
-
-
+    messages.append({"role": "user", "content": prompt})
 
 
     #response = generate(model='dolphin-llama3:8b', prompt=prompt)
@@ -86,9 +88,9 @@ while True:
         model="llama-3.1-8b-instant",
         messages=messages
     )
-    reply = response.choices[0].message.content
-    reply_dic = ast.literal_eval(reply)
-    
+    Response = response.choices[0].message.content
+    response_dic = ast.literal_eval(Response)
+    reply = response_dic["response"]    
 
     audio = eleven_client.text_to_speech.convert(
         text=reply,
@@ -96,20 +98,34 @@ while True:
         model_id="eleven_multilingual_v2",
         )
     save(audio, "output.mp3")
-
+    
+    if os.path.exists(MEMORY_FILE):
+        messages.append({"role": "assistant", "content": Response})
+    
+    with open(MEMORY_FILE, "w") as f:
+        json.dump(messages, f, indent=2)
+    
+    assistant_query_result = call_function(response_dic["function"],
+                                            response_dic["working_directory"],
+                                            response_dic["file_path"],
+                                            response_dic["content"])
+    
+    if os.path.exists(MEMORY_FILE):
+        messages.append({"role": "system", "content": f"Function result: {assistant_query_result}"})
+    
+        with open(MEMORY_FILE, "w") as f:
+            json.dump(messages, f, indent=2)
+    else:
+        pass
+        
+    
     if 'bye' in prompt:
-        print("bot> " + response.choices[0].message.content + "\n")
+        print("bot> " + reply + "\n")
         os.system("afplay output.mp3")
         break
 
-    print("bot> " + response.choices[0].message.content + "\n")
+    print("bot> " + reply + "\n")
     os.system("afplay output.mp3")
-
-    if os.path.exists(MEMORY_FILE):
-        messages.append({"role": "assistant", "content": reply})
-
-    with open(MEMORY_FILE, "w") as f:
-        json.dump(messages, f, indent=2)
 
 
     if verbose:
