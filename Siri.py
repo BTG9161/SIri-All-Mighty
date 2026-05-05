@@ -19,6 +19,7 @@ eleven_client = ElevenLabs(
 api_key = os.environ.get("GROK_API_KEY")
 client = Groq(api_key=api_key)
 
+global MEMORY_FILE
 while True:
     prompt = input(">>> ")
     MEMORY_FILE = "siri_memory.json"
@@ -53,24 +54,30 @@ while True:
     CAPABILITIES:
     - You cannot browse the internet or access external services.
     - If asked to do so, say it may be available in a future update.
-    - Functions list = [delete_file, write_file]
+    - Functions list = [delete_file, write_file, terminal_access]
     - Please **DO NOT** use any other function other than the ones in the Functions list!
+    - You have terminal access, so don't do anything stupid or regretful.
 
     RESPONSE STRUCTURE:
     - You have to respond in a dictionary response.
     - You can't go out of the dictionary format or else the whole program, of which you are a part of, will fail.
     - Dictionary has to be the response.
-    - Think of appropriate functions, if none of the functions are useful, return err as the response of the dictionary format.
+    - Think of appropriate functions, if none of the functions are useful, return "response":"err" as the response of the dictionary format, obviously including every other key too.
     - The format is, where the response is the part which the user cares about:
       {"function":"",
         "file_path:"",
         "working_directory:"",
-        "content:"",
+        "write_content:"",
+        "terminalCommand":"",
         "response":""}
     - The function part is case sensitive, and you cannot use any functin outside of the list provided.
     - Your first reponse must be "Hi, how one may be of service?", within the dictionary
     - The working_directory is "." by default
     - If you will use any function other than the given in the Functions list, the program will fail, and so will you.
+    
+    CONCLUSION
+    - Do not invent, modify, or reinterpret fields.
+    - Do not create new function names under any circumstances.
     """
         messages = [
         {"role": "system", "content": system_prompt},
@@ -89,6 +96,13 @@ while True:
         messages=messages
     )
     Response = response.choices[0].message.content
+    
+    if os.path.exists(MEMORY_FILE):
+        messages.append({"role": "assistant", "content": Response})
+    
+    with open(MEMORY_FILE, "w") as f:
+        json.dump(messages, f, indent=2)
+    
     response_dic = ast.literal_eval(Response)
     reply = response_dic["response"]    
 
@@ -99,16 +113,11 @@ while True:
         )
     save(audio, "output.mp3")
     
-    if os.path.exists(MEMORY_FILE):
-        messages.append({"role": "assistant", "content": Response})
-    
-    with open(MEMORY_FILE, "w") as f:
-        json.dump(messages, f, indent=2)
-    
-    assistant_query_result = call_function(response_dic["function"],
-                                            response_dic["working_directory"],
-                                            response_dic["file_path"],
-                                            response_dic["content"])
+    assistant_query_result = call_function(function= response_dic["function"],
+                                            wd= response_dic["working_directory"],
+                                            fp= response_dic["file_path"],
+                                            terminal= response_dic["terminalCommand"],
+                                            content= response_dic["write_content"])
     
     if os.path.exists(MEMORY_FILE):
         messages.append({"role": "system", "content": f"Function result: {assistant_query_result}"})

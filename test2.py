@@ -1,9 +1,6 @@
-import ast
-string = """{'key1': 'value1', 'key2': 'value2'}"""
-dic = ast.literal_eval(string)
+from functions.terminal_access import terminal_access
+from functions.call_function import call_function
 
 
-
-print(dic)
-
+print(call_function(function="terminal_access", wd="~/", fp="", terminal="pwd", content=""))
 
