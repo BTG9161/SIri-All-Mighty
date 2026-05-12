@@ -1,5 +1,0 @@
-there will be multiple agent_calls, each for functions, user_related_responses
-#the whole system_prompt needs to be changed, and possibly two different system_prompts need be made
-
-the functions for each part is done, now only the agent call part is left
-
