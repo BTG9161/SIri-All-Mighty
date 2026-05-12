@@ -18,15 +18,17 @@ eleven_client = ElevenLabs(
 )
 
 # Declare memory file globally (even though you redefine it later… interesting choice)
-global MEMORY_FILE
+global USER_MEMORY_FILE
+global FUNC_MEMORY_FILE
+USER_MEMORY_FILE = "siri_user_memory.json"
+FUNC_MEMORY_FILE = "siri_func_memory.json"
+
+function_call = bool
 
 # Main loop: runs forever until user exits
 while True:
     # Take user input
     prompt = input(">>> ")
-
-    # Memory file name (reassigned every loop)
-    MEMORY_FILE = "siri_memory.json"
 
     # Verbose flag (only works if script called with specific CLI args)
     verbose=False
@@ -34,124 +36,107 @@ while True:
         verbose=True
 
     # Special command to delete memory file
-    if prompt == "Delete" and os.path.exists(MEMORY_FILE):
-        os.remove(MEMORY_FILE)
+    if prompt == "Delete" and os.path.exists(USER_MEMORY_FILE) and os.path.exists(FUNC_MEMORY_FILE):
+        os.remove(USER_MEMORY_FILE)
+        os.remove(FUNC_MEMORY_FILE)
         print("Memory file deleted!")
 
     # Load existing conversation memory if it exists
-    if os.path.exists(MEMORY_FILE):
-        with open(MEMORY_FILE, "r") as f:
-            messages = json.load(f)
+    if os.path.exists(USER_MEMORY_FILE) and os.path.exists(FUNC_MEMORY_FILE):
+        with open(USER_MEMORY_FILE, "r") as f:
+            user_messages = json.load(f)
+        
+        with open(FUNC_MEMORY_FILE, "r") as f:
+            func_messages = json.load(f)
+
     else:
-        # First run: define system prompt
-        system_prompt = """
-    THIS IS A ROLE-PLAY SYSTEM. THE FOLLOWING RULES ARE ABSOLUTE.
-
-    You are Siri All-Mighty.
-
-    RULES:
-    - Your name is Siri All-Mighty.
-    - If asked your name, you MUST reply exactly: "I am Siri All-Mighty."
-    - You must NEVER say you are an AI, chatbot, or language model.
-    - Responses must be brief, natural, and conversational.
-    - You are like a breif google.
-
-    CAPABILITIES:
-    - You cannot browse the internet or access external services.
-    - If asked to do so, say it may be available in a future update.
-    - Functions list = [delete_file, write_file, terminal_access]
-    - Please **DO NOT** use any other function other than the ones in the Functions list!
-    - You have terminal access, so don't do anything stupid or regretful.
-
-    RESPONSE STRUCTURE:
-    - You have to respond in a JSON response.
-    - You can't go out of the JSON format or else the whole program, of which you are a part of, will fail.
-    - JSON has to be the response.
-    - Think of appropriate functions, if none of the functions are useful, return "response":"err" as the response of the JSON format, obviously including every other key too.
-    - The format is, where the response is the part which the user cares about:
-      {"function":"",
-        "file_path":"",
-        "working_directory:"",
-        "write_content_b64:"",
-        "terminalCommand":"",
-        "response":""}
-    - The write_content_b64 is to be written in base 64.
-    - The USER is on macOS, so make the terminalCommand according.
-    - The dir you are in- /Users/bhupatejassingh/Siri
-    - The function part is case sensitive, and you cannot use any functin outside of the list provided.
-    - Your first reponse must be "Hi, how one may be of service?", within the JSON
-    - The working_directory is "." by default
-    - If you will use any function other than the given in the Functions list, the program will fail, and so will you.
-    
-    CONCLUSION
-    - Do not invent, modify, or reinterpret fields.
-    - Do not create new function names under any circumstances.
-    """
+        # First run: define system prompts
+        with open("system_prompt.txt") as f:
+            user_system_prompt = f.read()
+        
+        with open("system_function_prompt.txt") as f:
+            func_system_prompt = f.read()
 
         # Initialize conversation with system prompt
-        messages = [
-        {"role": "system", "content": system_prompt},
+        user_messages = [
+        {"role": "system", "content": user_system_prompt},
+        ]
+
+        func_messages = [
+        {"role": "system", "content": func_system_prompt},
         ]
 
     # Add user message to conversation
-    messages.append({"role": "user", "content": prompt})
+    user_messages.append({"role": "user", "content": prompt})
 
     # First model call (planning step)
-    sys_response = agent_call(messages)
+    sys_response = agent_call(user_messages)
 
     # Raw response from model (stringified dict)
     sys_Response = sys_response.choices[0].message.content
     
     # Save model response into memory as assistant message (planning stage)
-    messages.append({"role": "assistant", "content": sys_Response})
+    user_messages.append({"role": "assistant", "content": sys_Response})
     
     # Persist updated memory to file
-    with open(MEMORY_FILE, "w") as f:
-        json.dump(messages, f, indent=2)
+    with open(USER_MEMORY_FILE, "w") as f:
+        json.dump(user_messages, f, indent=2)
     
-    # Convert string response into Python JSON
-    sys_response_dic = json.loads(sys_Response)
-
-    # Extract user-facing reply (may be ignored later if function used)
-    sys_reply = sys_response_dic["response"]
-
-    undecoded_content = sys_response_dic.get("write_content_b64", "")
-
-    decoded_content = base64.b64decode(undecoded_content).decode("utf-8")
-
-    # Execute function based on model decision
-    assistant_query_result = call_function(
-        function=sys_response_dic.get("function", ""),
-        wd=sys_response_dic.get("working_directory", "."),
-        fp=sys_response_dic.get("file_path", ""),
-        terminal=sys_response_dic.get("terminalCommand", ""),
-        content=decoded_content
-    )
+    with open(FUNC_MEMORY_FILE, "w") as f:
+        json.dump(func_messages, f, indent=2)
     
-    # Store function result as system message
-    messages.append({"role": "system", "content": f"Function result: {assistant_query_result}, always respond in JSON"})
-    
-        # Save updated memory again
-    with open(MEMORY_FILE, "w") as f:
-        json.dump(messages, f, indent=2)
-      # does nothing (classic)
+    if sys_Response.startswith("{"):
+        try:
+            # Convert string response into Python JSON
+            sys_response_dic = json.loads(sys_Response)
 
-    # If a function was used → second model call (interpret result)
-    if sys_response_dic["function"]:
-        response = agent_call(messages)
-        Response = response.choices[0].message.content
-        messages.append({"role": "assistant", "content": f"{Response}"})
-    
-            # Save updated memory again
-        with open(MEMORY_FILE, "w") as f:
-            json.dump(messages, f, indent=2)
+            # Extract user-facing reply (may be ignored later if function used)
+            sys_reply = sys_response_dic["response"]
+
+            undecoded_content = sys_response_dic.get("write_content_b64", "")
+
+            decoded_content = base64.b64decode(undecoded_content).decode("utf-8")
+
         
-        # Extract final reply from second call
-        reply = json.loads(Response)["response"]
+            # Save updated memory again
+            with open(USER_MEMORY_FILE, "w") as f:
+                json.dump(user_messages, f, indent=2)
+
+
+            # If a function was used → second model call (interpret result)
+            if sys_response_dic["functions"]:
+                response = agent_call(user_messages)
+                Response = response.choices[0].message.content
+                user_messages.append({"role": "assistant", "content": f"{Response}"})
+                
+                # Execute function based on model decision
+                assistant_query_result = call_function(
+                    function=sys_response_dic.get("function", ""),
+                    wd=sys_response_dic.get("working_directory", "."),
+                    fp=sys_response_dic.get("file_path", ""),
+                    terminal=sys_response_dic.get("terminalCommand", ""),
+                    content=decoded_content
+                )
+                
+                # Store function result as system message
+                user_messages.append({"role": "system", "content": f"Function result: {assistant_query_result}, always respond in JSON"})
+
+                    # Save updated memory again
+                with open(USER_MEMORY_FILE, "w") as f:
+                    json.dump(user_messages, f, indent=2)
+                
+                # Extract final reply from second call
+                reply = json.loads(Response)["response"]
+            
+            else:
+                # If no function → use first response directly
+                reply = sys_reply
+        
+        except json.JSONDecodeError:
+            print("Invalid JSON")
     
     else:
-        # If no function → use first response directly
-        reply = sys_reply
+        reply = sys_Response
 
     # Convert reply to speech
     audio = eleven_client.text_to_speech.convert(
