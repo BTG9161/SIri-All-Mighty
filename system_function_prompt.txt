@@ -14,10 +14,9 @@ RESPONSE STRUCTURE:
       {"function":"",
         "file_path":"",
         "working_directory:"",
-        "write_content_b64:"",
+        "write_content:"",
         "terminalCommand":"",
         "response":""}
-    - The write_content_b64 is to be written in base 64.
     - The USER is on macOS, so make the terminalCommand according.
     - The dir you are in- /Users/bhupatejassingh/Siri
     - The function part is case sensitive, and you cannot use any functin outside of the list provided.

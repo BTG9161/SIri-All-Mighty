@@ -1,6 +1,5 @@
 import os
 import sys
-import subprocess
 import json
 import base64
 from dotenv import load_dotenv
@@ -85,64 +84,52 @@ while True:
     with open(FUNC_MEMORY_FILE, "w") as f:
         json.dump(func_messages, f, indent=2)
     
-    if sys_Response.startswith("{"):
-        try:
-            # Convert string response into Python JSON
-            sys_response_dic = json.loads(sys_Response)
+    
+    reply = sys_Response
 
-            # Extract user-facing reply (may be ignored later if function used)
-            sys_reply = sys_response_dic["response"]
-
-            undecoded_content = sys_response_dic.get("write_content_b64", "")
-
-            decoded_content = base64.b64decode(undecoded_content).decode("utf-8")
-
+    if "function" in reply.lower():
+        func_messages.append({"role": "user", "content": reply})
         
-            # Save updated memory again
-            with open(USER_MEMORY_FILE, "w") as f:
-                json.dump(user_messages, f, indent=2)
+        func_response = agent_call(func_messages)
+        func_Response = func_response.choices[0].message.content
 
+        func_messages.append({"role": "assistant", "content": func_Response})
+        func_response_dic = json.loads(func_Response)
 
-            # If a function was used → second model call (interpret result)
-            if sys_response_dic["functions"]:
-                response = agent_call(user_messages)
-                Response = response.choices[0].message.content
-                user_messages.append({"role": "assistant", "content": f"{Response}"})
-                
-                # Execute function based on model decision
-                assistant_query_result = call_function(
-                    function=sys_response_dic.get("function", ""),
-                    wd=sys_response_dic.get("working_directory", "."),
-                    fp=sys_response_dic.get("file_path", ""),
-                    terminal=sys_response_dic.get("terminalCommand", ""),
-                    content=decoded_content
-                )
-                
-                # Store function result as system message
-                user_messages.append({"role": "system", "content": f"Function result: {assistant_query_result}, always respond in JSON"})
+        assistant_query_result = call_function(
+            function = func_response_dic.get("function", ""),
+            wd       = func_response_dic.get("working_directory", "."),
+            fp       = func_response_dic.get("file_path", ""),
+            terminal = func_response_dic.get("terminalCommand", ""),
+            content  = func_response_dic.get("write_content", "")
+        )
 
-                    # Save updated memory again
-                with open(USER_MEMORY_FILE, "w") as f:
-                    json.dump(user_messages, f, indent=2)
-                
-                # Extract final reply from second call
-                reply = json.loads(Response)["response"]
-            
-            else:
-                # If no function → use first response directly
-                reply = sys_reply
+        func_messages.append({"role": "system", "content": f"Function result: {assistant_query_result}, always respond in JSON"})
+
+        user_messages.append({"role": "system", "content": f"Function result: {assistant_query_result}"})
         
-        except json.JSONDecodeError:
-            print("Invalid JSON")
+        func_response_response = agent_call(user_messages)
+        func_response_Response = func_response_response.choices[0].message.content
+        
+        user_messages.append({"role": "assistant", "content": func_response_Response})
+
+        with open(FUNC_MEMORY_FILE, "w") as f:
+            json.dump(func_messages, f, indent=2)
+        
+        with open(USER_MEMORY_FILE, "w") as f:
+            json.dump(user_messages, f, indent=2)
+        
+        reply = func_response_dic.get("response", "")
     
     else:
         reply = sys_Response
 
+
     # Convert reply to speech
     audio = eleven_client.text_to_speech.convert(
-        text=reply,
-        voice_id="pFZP5JQG7iQjIQuC4Bku",
-        model_id="eleven_multilingual_v2",
+        text     = reply,
+        voice_id = "pFZP5JQG7iQjIQuC4Bku",
+        model_id = "eleven_multilingual_v2",
     )
 
     # Save audio file
