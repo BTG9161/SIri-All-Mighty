@@ -1,7 +1,13 @@
 import os
 from pathlib import Path
 
-def write_file(working_directory=".", file_path=None, content=None):
+def write_file(working_directory="", file_path=None, content=None) -> str:
+    """Write to a file on the user's system.
+    
+    ARGS:
+        working_directory: The working directory of the file, you don't need to specify it unless stated otherwise.
+        file_path: The path relative to the working directory.
+        content: The content of the file."""
     path_wd = Path(working_directory).resolve()
     path_d = Path(working_directory, file_path).resolve()
 

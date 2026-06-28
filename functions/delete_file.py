@@ -2,7 +2,11 @@ import os
 from pathlib import Path
 
 
-def delete_file(working_directory=".", file_path=None ):
+def delete_file(file_path, working_directory="/Users/bhupatejassingh/Siri") -> str:
+    """To delete the specified file.
+    ARGS:
+        file_path: The file path relative to the working directory.
+        working_directory: The working directory of the file, you don't need to specify it unless stated otherwise."""
     path_wd = Path(working_directory).resolve()
     path_file = Path(working_directory, file_path).resolve()
 
@@ -13,7 +17,7 @@ def delete_file(working_directory=".", file_path=None ):
         os.remove(path_file)
     
     except Exception as e:
-        return f"{Exception} occured durin delting file {path_file}"
+        return f"{e} occured durin delting file {path_file}"
 
     return f"{file_path} deleted successfully."
 

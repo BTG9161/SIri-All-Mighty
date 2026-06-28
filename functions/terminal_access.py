@@ -1,7 +1,10 @@
 import subprocess
 
 
-def terminal_access(content):
+def terminal_access(content) -> str:
+    """For executing terminal commands.
+    ARGS:
+        content: The commands for terminal."""
     try:
         result = subprocess.run(content,
                                 shell=True,
