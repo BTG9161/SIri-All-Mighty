@@ -2,13 +2,12 @@ import os
 import sys
 import json
 from dotenv import load_dotenv
-from functions.delete_file import delete_file
-from functions.write_file import write_file
-from functions.terminal_access import terminal_access
+from pynput import keyboard
 from functions.agent_call import agent_call
 from functions.agent_call import final_call
 from functions.eleven_call import eleven_call
 from functions.execute_tool_call import execute_tool_call
+from functions.STT import STT
 
 
 # Load environment variables (API keys, etc.)
@@ -23,6 +22,8 @@ USER_MEMORY_FILE = "siri_memory.json"
 while True:
     # Take user input
     prompt = input(">>> ")
+    stt_prompt = ""
+    prompt = stt_prompt + prompt
 
     # Verbose flag (only works if script called with specific CLI args)
     verbose=False

@@ -1,4 +1,4 @@
-from pynput import keyboard
+from wake import wake
 import sounddevice as sd
 from scipy.io.wavfile import write
 import numpy as np
@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 from groq import Groq
 import webrtcvad
 
-current = set() # set for tracking keys pressed
-wake = {keyboard.Key.ctrl, keyboard.Key.shift}
 vad = webrtcvad.Vad(2) # aggressiveness 0-3 
 
 recording = False
@@ -20,21 +18,6 @@ frames=[]
 silence_counter = 0
 silence_limit = 50
 
-def on_press(key):
-    global recording
-    current.add(key)
-
-    if all(k in current for k in wake):
-        print('Pressed...')
-    
-        recording = True
-
-def on_release(key):
-    if key in current:
-        current.discard(key)
-    
-    if recording and key in wake:
-        listener.stop()
 
 def callback(indata, frame_count, time_info, status):
     global recording, silence_counter
@@ -57,8 +40,13 @@ def callback(indata, frame_count, time_info, status):
     
 
 def STT():
-    with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
-        listener.join()
+    global recording, silence_counter, frames, prompt, listener
+
+    recording = False
+    silence_counter = 0
+    frames = []
+
+    recording = wake()
 
     stream = sd.InputStream(samplerate=sr,
                             blocksize=frame_size,
@@ -92,5 +80,7 @@ def STT():
             model="whisper-large-v3-turbo",
         )
 
-    return transcription.text
+    prompt = transcription.text
+
+STT()
 

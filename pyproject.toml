@@ -3,7 +3,7 @@ name = "siri"
 version = "0.1.0"
 description = "This project is a Siri-alternative but is like Openclaw, aptly named 'Siri All-Mighty'."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "groq",
     "dotenv",
@@ -15,4 +15,10 @@ dependencies = [
     "pynput",
     "python-dotenv",
     "mcp",
+    "pyaudio",
+    "numpy>=2.5.0",
+    "sounddevice",
+    "scipy",
+    "setuptools>=82.0.1",
+    "webrtcvad-wheels>=2.0.14",
 ]
