@@ -2,7 +2,7 @@ import os
 import sys
 import json
 from dotenv import load_dotenv
-from pynput import keyboard
+import threading
 from functions.agent_call import agent_call
 from functions.agent_call import final_call
 from functions.eleven_call import eleven_call
@@ -12,18 +12,36 @@ from functions.STT import STT
 
 # Load environment variables (API keys, etc.)
 load_dotenv()
+prompt_list = []
 
 # Declare memory file globally (even though you redefine it later… interesting choice)
 global USER_MEMORY_FILE
 USER_MEMORY_FILE = "siri_memory.json"
 
+def prompt_worker():
+    global type_prompt, prompt_list
+    type_prompt = input(">>> ")
+    prompt_list.append(type_prompt)
+
+def stt_prompt_worker():
+    global stt_prompt, prompt_list
+    stt_prompt = ""
+    stt_prompt += STT()
+    prompt_list.append(stt_prompt)
 
 # Main loop: runs forever until user exits
 while True:
     # Take user input
-    prompt = input(">>> ")
-    stt_prompt = ""
-    prompt = stt_prompt + prompt
+    t1 = threading.Thread(target=prompt_worker)
+    t2 = threading.Thread(target=stt_prompt_worker)
+    t1.start()
+    t2.start()
+    t1.join()
+    prompt = ""
+    prompt_list = []
+
+    for x in prompt_list:
+        prompt += x
 
     # Verbose flag (only works if script called with specific CLI args)
     verbose=False
@@ -93,7 +111,7 @@ while True:
     
     eleven_call(reply)
     # Exit condition
-    if 'bye' in prompt:
+    if 'bye'.lower() in prompt:
         print("bot> " + reply + "\n")
         os.system("afplay output.mp3")
         break

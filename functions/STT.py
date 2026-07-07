@@ -1,4 +1,4 @@
-from wake import wake
+from .wake import wake
 import sounddevice as sd
 from scipy.io.wavfile import write
 import numpy as np
@@ -81,6 +81,6 @@ def STT():
         )
 
     prompt = transcription.text
+    return prompt
 
-STT()
 
