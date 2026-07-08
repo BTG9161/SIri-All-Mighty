@@ -55,15 +55,18 @@ def STT():
                             callback=callback
                             )
 
+    try:
+        stream.start()
+        print('Recording...')
 
-    stream.start()
-    print('Recording...')
+        while recording:
+            time.sleep(0.5)
 
-    while recording:
-        time.sleep(0.5)
-
-    stream.stop()
-    stream.close()
+        stream.stop()
+        stream.close()
+    
+    except Exception:
+        pass
 
     recorded = np.concatenate(frames, axis=0)
 
@@ -81,6 +84,7 @@ def STT():
         )
 
     prompt = transcription.text
+    print(prompt)
     return prompt
 
 

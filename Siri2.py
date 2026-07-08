@@ -38,10 +38,11 @@ while True:
     t2.start()
     t1.join()
     prompt = ""
-    prompt_list = []
 
     for x in prompt_list:
         prompt += x
+    
+    prompt_list = []
 
     # Verbose flag (only works if script called with specific CLI args)
     verbose=False
