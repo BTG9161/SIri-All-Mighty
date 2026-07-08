@@ -1,10 +1,50 @@
-Siri All-Mighty but a bit like OpenClaw
+# Siri All-Mighty 🎙️
 
-This repo is for me because OpenClaw wasn't working for me, so i decided to do what everyone does these days...
-I made my own, because why not.
-This project uses APIs, specifically Groq(for brain) and Elevenlabs(for voice)
-It also keeps history
+A personal DIY voice assistant powered by **Groq** (reasoning) and **ElevenLabs** (voice). Since it uses cloud APIs instead of a local model, it runs well on **older or less powerful computers**.
+Actually it is for **older or less powerful computers** because my mac is an **older and less powerful computer**
 
-The naming is chaotic everywhere, but it(the project) is what it is.
-It's a work in progress, but is a bit functional too.
-:)
+## What it does
+- Accepts typed and spoken input (The merger is Work In Progress but, they work(in a way))
+- Sends prompts to Groq, supports tool/function calling
+- Speaks replies via ElevenLabs
+- Persists conversation memory to `siri_memory.json`
+- Say **"delete"** to clear memory, **"bye"** to exit
+- `-v` / `--verbose` flag for token usage logging
+
+## Setup
+```bash
+git clone https://github.com/BTG9161/SIri-All-Mighty.git
+cd SIri-All-Mighty
+uv sync
+```
+If you don't have uv, you could copy the project.toml libs to a .txt file and download from there (pip install -r requirements.txt)
+
+Create a `.env`:
+```
+GROQ_API_KEY=your_key_here
+ELEVENLABS_API_KEY=your_key_here
+```
+
+Or you could make enviornment vars in terminal
+
+## Usage
+```bash
+python Siri2.py
+```
+
+## Requirements
+- macOS (uses `afplay` + `pyobjc`)
+- Groq + ElevenLabs API keys
+- Microphone for speech input
+- No GPU/local model needed — designed for modest hardware
+
+## Status
+Active personal project, still evolving — expect rough edges.
+
+## Note(s)
+- The Siri.py is not the main file, actually it is just there because i want it and has no real use.
+- You could change the Siri2.py for other platforms, because i don't want to do it.
+
+## For Hack Club reviewers
+- This was made **WITH the help** of AI, not **BY** AI.
+- Also, this was in progress before signing up on Macondo, there's the truth.
