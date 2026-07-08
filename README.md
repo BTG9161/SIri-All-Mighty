@@ -46,5 +46,6 @@ Active personal project, still evolving — expect rough edges.
 - You could change the Siri2.py for other platforms, because i don't want to do it.
 
 ## For Hack Club reviewers
-- This was made **WITH the help** of AI, not **BY** AI.
-- Also, this was in progress before signing up on Macondo, there's the truth.
+- This project was in progress before I signed up — check the commit history for dates.
+- AI (Claude) was used as a coding assistant throughout: debugging the dual-input threading logic, writing boilerplate for the Groq/ElevenLabs API calls, and helping draft this README. The core architecture, feature decisions, and all the debugging of actual hardware/API issues were mine.
+
