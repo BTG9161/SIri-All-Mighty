@@ -1,4 +1,4 @@
-from .wake import wake
+from .wake import wake_done, input_queue
 import sounddevice as sd
 from scipy.io.wavfile import write
 import numpy as np
@@ -45,8 +45,10 @@ def STT():
     recording = False
     silence_counter = 0
     frames = []
-
-    recording = wake()
+    
+    wake_done.wait()
+    recording = True
+    wake_done.clear()
 
     stream = sd.InputStream(samplerate=sr,
                             blocksize=frame_size,
@@ -84,7 +86,11 @@ def STT():
         )
 
     prompt = transcription.text
+    input_queue.put(prompt)
     print(prompt)
     return prompt
 
+def STT_loop():
+    while True:
+        STT()
 

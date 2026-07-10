@@ -7,43 +7,41 @@ from functions.agent_call import agent_call
 from functions.agent_call import final_call
 from functions.eleven_call import eleven_call
 from functions.execute_tool_call import execute_tool_call
-from functions.STT import STT
+from functions.STT import STT_loop
+from functions.wake import global_listener, input_queue, type_done
+import threading
 
 
 # Load environment variables (API keys, etc.)
 load_dotenv()
 prompt_list = []
+listener = global_listener()
+stt = threading.Thread(target=STT_loop, daemon=True) # daemon=True marks a thread as a background/daemon thread — it tells Python's threading system
+stt.start()
 
 # Declare memory file globally (even though you redefine it later… interesting choice)
 global USER_MEMORY_FILE
 USER_MEMORY_FILE = "siri_memory.json"
 
-def prompt_worker():
-    global type_prompt, prompt_list
-    type_prompt = input(">>> ")
-    prompt_list.append(type_prompt)
 
-def stt_prompt_worker():
-    global stt_prompt, prompt_list
-    stt_prompt = ""
-    stt_prompt += STT()
-    prompt_list.append(stt_prompt)
-
+print("Chatting benings...")
 # Main loop: runs forever until user exits
 while True:
     # Take user input
-    t1 = threading.Thread(target=prompt_worker)
-    t2 = threading.Thread(target=stt_prompt_worker)
-    t1.start()
-    t2.start()
-    t1.join()
+    type_done.clear()
+    type_done.wait()
     prompt = ""
 
-    for x in prompt_list:
-        prompt += x
-    
-    prompt_list = []
+    chunks = []
 
+    while not input_queue.empty():
+        chunks.append(input_queue.get()) # .get() fetches the 
+    
+    prompt = " ".join(chunks)
+
+    if not prompt.strip():
+        continue        
+    
     # Verbose flag (only works if script called with specific CLI args)
     verbose=False
     if len(sys.argv)==3 and (sys.argv[2]=="-v" or sys.argv[2]=="--verbose"):
