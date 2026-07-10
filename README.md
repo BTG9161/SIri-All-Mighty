@@ -1,10 +1,10 @@
-# Siri All-Mighty 🎙️
+# Siri All-Mighty
 
 A personal DIY voice assistant powered by **Groq** (reasoning) and **ElevenLabs** (voice). Since it uses cloud APIs instead of a local model, it runs well on **older or less powerful computers**.
 Actually it is for **older or less powerful computers** because my mac is an **older and less powerful computer**
 
 ## What it does
-- Accepts typed and spoken input (The merger is Work In Progress but, they work(in a way))
+- Accepts typed and spoken input- ctrl+shift for speaking, ctrl+alt(or option) for typing=done **AFTER** pressing enter.
 - Sends prompts to Groq, supports tool/function calling
 - Speaks replies via ElevenLabs
 - Persists conversation memory to `siri_memory.json`
@@ -46,6 +46,5 @@ Active personal project, still evolving — expect rough edges.
 - You could change the Siri2.py for other platforms, because i don't want to do it.
 
 ## For Hack Club reviewers
-- This project was in progress before I signed up — check the commit history for dates.
 - AI (Claude) was used as a coding assistant throughout: debugging the dual-input threading logic, writing boilerplate for the Groq/ElevenLabs API calls, and helping draft this README. The core architecture, feature decisions, and all the debugging of actual hardware/API issues were mine.
 
