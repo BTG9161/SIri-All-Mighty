@@ -4,7 +4,7 @@ A personal DIY voice assistant powered by **Groq** (reasoning) and **ElevenLabs*
 Actually it is for **older or less powerful computers** because my mac is an **older and less powerful computer**
 
 ## What it does
-- Accepts typed and spoken input- ctrl+shift for speaking, ctrl+alt(or option) for typing=done **AFTER** pressing enter (The merger is not that good, but hey... they work(in a way!?!))
+- Accepts typed and spoken input- ctrl+shift for speaking, ctrl+alt(or option) for typing=done **AFTER** pressing enter.
 - Sends prompts to Groq, supports tool/function calling
 - Speaks replies via ElevenLabs
 - Persists conversation memory to `siri_memory.json`
