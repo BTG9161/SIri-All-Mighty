@@ -21,4 +21,5 @@ dependencies = [
     "scipy",
     "setuptools>=82.0.1",
     "webrtcvad-wheels>=2.0.14",
+    "python-telegram-bot>=22.8",
 ]

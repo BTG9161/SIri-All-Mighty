@@ -73,7 +73,6 @@ def STT():
     recorded = np.concatenate(frames, axis=0)
 
     write("output.wav", sr, recorded)
-    print("Saved to output.wav")
 
     load_dotenv()
     API_KEY = os.getenv("GROQ_API_KEY")

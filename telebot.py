@@ -1,65 +1,53 @@
 import os
-import sys
 import json
-from dotenv import load_dotenv
-import threading
-from functions.agent_call import agent_call
-from functions.agent_call import final_call
-from functions.eleven_call import eleven_call
+import logging
+import asyncio
+from functions.agent_call import agent_call, final_call
 from functions.execute_tool_call import execute_tool_call
-from functions.STT import STT_loop
-from functions.wake import global_listener, input_queue, type_done
+from dotenv import load_dotenv
+from telegram import Update
+from telegram.ext import(
+    ApplicationBuilder,
+    ContextTypes,
+    CommandHandler,
+    MessageHandler,
+    filters,
+)
 
-
-# Load environment variables (API keys, etc.)
 load_dotenv()
-prompt_list = []
-listener = global_listener()
-stt = threading.Thread(target=STT_loop, daemon=True) # daemon=True marks a thread as a background/daemon thread — it tells Python's threading system
-stt.start()
+logging.basicConfig(level=logging.INFO)
 
+BOT_TOKEN = os.getenv("TELEGRAM_API_KEY")
 USER_MEMORY_FILE = "siri_memory.json"
 
 
-print("Chatting benings...")
-# Main loop: runs forever until user exits
-while True:
-    # Take user input
-    type_done.clear()
-    type_done.wait()
-    prompt = ""
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Bot is up. Send me a message.")
 
-    chunks = []
 
-    while not input_queue.empty():
-        chunks.append(input_queue.get()) # .get() fetches the 
+async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    prompt = update.message.text
+    print(f"Got: {prompt}")
+    loop = asyncio.get_running_loop()
+
+    if "bye".lower() in prompt:
+        breakpoint
     
-    prompt = " ".join(chunks)
-
-    if not prompt.strip():
-        continue        
-    
-    # Verbose flag (only works if script called with specific CLI args)
-    verbose=False
-    if len(sys.argv)==3 and (sys.argv[2]=="-v" or sys.argv[2]=="--verbose"):
-        verbose=True
-
-    # Special command to delete memory file
     if prompt.lower() == "delete" and os.path.exists(USER_MEMORY_FILE):
         os.remove(USER_MEMORY_FILE)
         print("Memory file deleted!")
-        break
+        breakpoint
+    elif prompt.lower() == "delete" and not os.path.exists(USER_MEMORY_FILE):
+        await update.message.reply_text("You haven't even started...")
 
-    # Load existing conversation memory if it exists
     if os.path.exists(USER_MEMORY_FILE):
         with open(USER_MEMORY_FILE, "r") as f:
             user_messages = json.load(f)
-
     else:
         # First run: define system prompts
         with open("system_prompt.txt") as f:
             user_system_prompt = f.read()
-
+        
         # Initialize conversation with system prompt
         user_messages = [
         {"role": "system", "content": user_system_prompt},
@@ -68,15 +56,16 @@ while True:
     user_messages.append({"role": "user", "content": prompt})
     with open(USER_MEMORY_FILE, "w") as f:
             json.dump(user_messages, f, indent=2)
-    
-    response = agent_call(user_messages)
+
+
+    response = await loop.run_in_executor(None, agent_call, user_messages)
+
     Response = response.choices[0].message.content
-    
-    # Check for tool calls
+
     if response.choices[0].message.tool_calls:
         # Execute each tool call (using the helper function from step 2)
         for tool_call in response.choices[0].message.tool_calls:
-            function_response = execute_tool_call(tool_call)
+            function_response = await loop.run_in_executor(None, execute_tool_call, tool_call)
             
             # Add tool result to messages
             user_messages.append({
@@ -85,9 +74,9 @@ while True:
                 "name": tool_call.function.name,
                 "content": str(function_response)
             })
-        
+    
         # Send results back and get final response
-        final_response = final_call(user_messages)
+        final_response = await loop.run_in_executor(None, final_call, user_messages)
         final_Response = final_response.choices[0].message.content
 
         user_messages.append({"role": "assistant", "content": final_Response})
@@ -105,20 +94,26 @@ while True:
         with open(USER_MEMORY_FILE, "w") as f:
             json.dump(user_messages, f, indent=2)
     
-    eleven_call(reply)
-    # Exit condition
-    if 'bye'.lower() in prompt:
-        print("bot> " + reply + "\n")
-        os.system("afplay output.mp3")
-        break
+    await update.message.reply_text(reply)
 
-    # Print reply and play audio
-    print("bot> " + reply + "\n")
-    os.system("afplay output.mp3")
 
-    # Verbose logging (tokens, etc.)
-    if verbose:
-        print(f"User prompt: {prompt}")
-        print(f"Prompt tokens: {response.usage.prompt_tokens}")
-        print(f"Response tokens: {response.usage.completion_tokens}")
+async def handle_voice(update: Update, context: ContextTypes):
+    voice_file = await update.message.voice.get_file()
+    voice_path = "/Users/bhupatejassingh/Siri/voice.ogg"
+    await voice_file.download_to_drive(voice_path)
+    await update.message.reply_text("Got the voice note.")
+
+
+def main():
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+
+    app.add_handlers([CommandHandler("start", start),
+                      MessageHandler(filters.TEXT & ~ filters.COMMAND, handle_text),
+                      MessageHandler(filters.VOICE, handle_voice)])
+
+    print("Bot running... Ctrl+C to stop.")
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()
 
