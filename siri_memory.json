@@ -24,5 +24,37 @@
   {
     "role": "assistant",
     "content": "Hello! How can I assist you today?"
+  },
+  {
+    "role": "user",
+    "content": "could you tell me how to ssh with a key"
+  },
+  {
+    "role": "tool",
+    "tool_call_id": "xmsw5qh2x",
+    "name": "terminal_access",
+    "content": ""
+  },
+  {
+    "role": "assistant",
+    "content": "To SSH with a key, you can use the following command:\n\n```bash\nssh -i /path/to/your/key.pem username@hostname\n```\n\nReplace:\n\n- `/path/to/your/key.pem` with the path to your private key file\n- `username` with your username on the remote host\n- `hostname` with the hostname or IP address of the remote host\n\nMake sure the key file is in the correct format (.pem or .key) and that you've set the correct permissions on the key file:\n\n```bash\nchmod 400 /path/to/your/key.pem\n```\n\nOnce you've entered the command, you should be logged in to the remote host without needing a password."
+  },
+  {
+    "role": "user",
+    "content": "i want to clone a repo from github, how to do that"
+  },
+  {
+    "role": "tool",
+    "tool_call_id": "x81s7zwsd",
+    "name": "terminal_access",
+    "content": ""
+  },
+  {
+    "role": "assistant",
+    "content": "To clone a repository from GitHub, you can use the `git clone` command:\n\n```bash\ngit clone https://github.com/user/repository.git\n```\n\nReplace:\n\n- `https://github.com/user/repository.git` with the URL of the repository you want to clone, for example: `https://github.com/user/siri-examples.git`\n\nThis will download a copy of the repository to your local machine. The directory will be named after the repository.\n\nMake sure you have Git installed on your machine. If you haven't already, you can install it by running:\n\n```bash\nbrew install git\n```\n\n(on macOS)\n\nYou can then navigate into the cloned directory and start working on the repository:\n\n```bash\ncd repository.git\n```"
+  },
+  {
+    "role": "user",
+    "content": "how to change name of repo in github"
   }
 ]
