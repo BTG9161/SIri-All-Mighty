@@ -1,5 +1,6 @@
 import os
 import json
+from groq import Groq
 import logging
 import asyncio
 from functions.agent_call import agent_call, final_call
@@ -17,28 +18,30 @@ from telegram.ext import(
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
+VOICE_PATH = os.getenv("DIR")
 BOT_TOKEN = os.getenv("TELEGRAM_API_KEY")
 USER_MEMORY_FILE = "siri_memory.json"
+ALLOWED_CHAT_IDS = [int(x) for x in os.getenv("CHAT_IDS").split(",")]
+API_KEY = os.getenv("GROQ_API_KEY")
+
+client = Groq(api_key=API_KEY)
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Bot is up. Send me a message.")
 
 
-async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    prompt = update.message.text
-    print(f"Got: {prompt}")
+async def handle_prompt(update: Update, prompt: str) -> str:
     loop = asyncio.get_running_loop()
 
-    if "bye".lower() in prompt:
-        breakpoint
-    
     if prompt.lower() == "delete" and os.path.exists(USER_MEMORY_FILE):
         os.remove(USER_MEMORY_FILE)
         print("Memory file deleted!")
-        breakpoint
+        await update.message.reply_text("Memory file deleted!")
+        return
     elif prompt.lower() == "delete" and not os.path.exists(USER_MEMORY_FILE):
         await update.message.reply_text("You haven't even started...")
+        return
 
     if os.path.exists(USER_MEMORY_FILE):
         with open(USER_MEMORY_FILE, "r") as f:
@@ -56,7 +59,6 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_messages.append({"role": "user", "content": prompt})
     with open(USER_MEMORY_FILE, "w") as f:
             json.dump(user_messages, f, indent=2)
-
 
     response = await loop.run_in_executor(None, agent_call, user_messages)
 
@@ -93,15 +95,37 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_messages.append({"role": "assistant", "content": Response})
         with open(USER_MEMORY_FILE, "w") as f:
             json.dump(user_messages, f, indent=2)
-    
+
     await update.message.reply_text(reply)
 
 
-async def handle_voice(update: Update, context: ContextTypes):
+async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id not in ALLOWED_CHAT_IDS:
+        return
+
+    prompt = update.message.text
+    print(f"Got: {prompt}")
+    
+    await handle_prompt(update, prompt)
+
+
+async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id not in ALLOWED_CHAT_IDS:
+        return
     voice_file = await update.message.voice.get_file()
-    voice_path = "/Users/bhupatejassingh/Siri/voice.ogg"
-    await voice_file.download_to_drive(voice_path)
-    await update.message.reply_text("Got the voice note.")
+    
+    await voice_file.download_to_drive(VOICE_PATH)
+
+    with open(VOICE_PATH, "rb") as file:
+        transcription = client.audio.transcriptions.create(
+            file=("audio.ogg", file.read()),
+            model="whisper-large-v3-turbo",
+        )
+    prompt = transcription.text
+
+    print(f"Got: {prompt}")
+
+    await handle_prompt(update, prompt)
 
 
 def main():

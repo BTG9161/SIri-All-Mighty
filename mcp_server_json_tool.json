@@ -1,0 +1,100 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "delete_file",
+      "description": "To delete the specified file.\n    ARGS:\n        file_path: The file path relative to the working directory.\n        working_directory: The working directory of the file, you don't need to specify it unless stated otherwise.",
+      "parameters": {
+        "properties": {
+          "file_path": {
+            "title": "file_path",
+            "type": "string"
+          },
+          "working_directory": {
+            "default": "/Users/bhupatejassingh/Siri",
+            "title": "working_directory",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_path"
+        ],
+        "title": "delete_fileArguments",
+        "type": "object"
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "write_file",
+      "description": "Write to a file on the user's system.\n    \n    ARGS:\n        working_directory: The working directory of the file, you don't need to specify it unless stated otherwise.\n        file_path: The path relative to the working directory.\n        content: The content of the file.",
+      "parameters": {
+        "properties": {
+          "working_directory": {
+            "default": "",
+            "title": "working_directory",
+            "type": "string"
+          },
+          "file_path": {
+            "default": null,
+            "title": "file_path",
+            "type": "string"
+          },
+          "content": {
+            "default": null,
+            "title": "content",
+            "type": "string"
+          }
+        },
+        "title": "write_fileArguments",
+        "type": "object"
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "terminal_access",
+      "description": "For executing terminal commands.\n    ARGS:\n        content: The commands for terminal.",
+      "parameters": {
+        "properties": {
+          "content": {
+            "title": "content",
+            "type": "string"
+          }
+        },
+        "required": [
+          "content"
+        ],
+        "title": "terminal_accessArguments",
+        "type": "object"
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "memory",
+      "description": "\n    To store a piece of memory.\n    ARGS:\n        memory_piece: Piece of memory that needs to be stored.\n        importance: How important is the piece of memory.\n    ",
+      "parameters": {
+        "properties": {
+          "memory_piece": {
+            "title": "Memory Piece",
+            "type": "string"
+          },
+          "importance": {
+            "title": "Importance",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "memory_piece",
+          "importance"
+        ],
+        "title": "memoryArguments",
+        "type": "object"
+      }
+    }
+  }
+]

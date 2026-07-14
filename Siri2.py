@@ -1,13 +1,14 @@
 import os
 import sys
 import json
-from dotenv import load_dotenv
 import threading
+from dotenv import load_dotenv
+from functions.STT import STT_loop
+from functions.memory import memory_access
 from functions.agent_call import agent_call
 from functions.agent_call import final_call
 from functions.eleven_call import eleven_call
 from functions.execute_tool_call import execute_tool_call
-from functions.STT import STT_loop
 from functions.wake import global_listener, input_queue, type_done
 
 
@@ -19,7 +20,7 @@ stt = threading.Thread(target=STT_loop, daemon=True) # daemon=True marks a threa
 stt.start()
 
 USER_MEMORY_FILE = "siri_memory.json"
-
+memory = memory_access()
 
 print("Chatting benings...")
 # Main loop: runs forever until user exits
@@ -58,11 +59,13 @@ while True:
     else:
         # First run: define system prompts
         with open("system_prompt.txt") as f:
-            user_system_prompt = f.read()
+            system_prompt = f.read()
+            system_prompt += f"""Long-term:
+            {memory}"""
 
         # Initialize conversation with system prompt
         user_messages = [
-        {"role": "system", "content": user_system_prompt},
+        {"role": "system", "content": system_prompt},
         ]
     
     user_messages.append({"role": "user", "content": prompt})

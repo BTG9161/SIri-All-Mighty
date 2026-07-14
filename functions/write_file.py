@@ -23,7 +23,7 @@ def write_file(working_directory="", file_path=None, content=None) -> str:
             return f"Error creating dirs- '{newdir}': {e}"
         
     try:
-        with open(path_d, 'w') as f:
+        with open(path_d, 'w', encoding="utf-8") as f:
             f.write(content)
         return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
     except Exception as e:
