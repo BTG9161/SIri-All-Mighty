@@ -25,7 +25,7 @@ for tool in mcp._tool_manager.list_tools():
         }
     })
 
-with open("mcp_server_json_tool.json", 'w') as f:
+with open("functions/mcp_server_json_tool.json", 'w') as f:
     json.dump(tools, f, indent=2)
 
 

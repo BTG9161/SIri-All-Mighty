@@ -8,6 +8,7 @@ from functions.memory import memory_access
 from functions.agent_call import agent_call
 from functions.agent_call import final_call
 from functions.eleven_call import eleven_call
+from functions.sessions import store_session
 from functions.execute_tool_call import execute_tool_call
 from functions.wake import global_listener, input_queue, type_done
 
@@ -19,7 +20,7 @@ listener = global_listener()
 stt = threading.Thread(target=STT_loop, daemon=True) # daemon=True marks a thread as a background/daemon thread — it tells Python's threading system
 stt.start()
 
-USER_MEMORY_FILE = "siri_memory.json"
+USER_MEMORY_FILE = "current_session.json"
 memory = memory_access()
 
 print("Chatting benings...")
@@ -113,6 +114,7 @@ while True:
     if 'bye'.lower() in prompt:
         print("bot> " + reply + "\n")
         os.system("afplay output.mp3")
+        store_session(USER_MEMORY_FILE)
         break
 
     # Print reply and play audio

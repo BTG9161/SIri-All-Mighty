@@ -14,5 +14,13 @@ wheels/
 
 
 #Files
+test*
+*_test*
+output*
+voice.ogg
+mcp_server.py
+Siri.py
+Siri.code-workspace
+Siri All-Mighty Workspace.code-workspace
 note.txt
 .DS_Store
