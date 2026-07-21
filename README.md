@@ -1,19 +1,16 @@
 # Siri All-Mighty
 
-A personal DIY voice/chat assistant powered by **Groq** (reasoning) and **ElevenLabs** (voice). Since it uses cloud APIs instead of a local model, it runs well on **older or less powerful computers** — like the one this was built on.
+A personal DIY voice/chat assistant powered by **Groq** (reasoning) and **ElevenLabs** (voice).
 
-The project has two faces now:
-- **CLI voice assistant** (`Siri2.py`) — the original, mic + keyboard input, spoken replies.
+The project includes:
+- **Voice assistant** (`Siri2.py`) — the original, mic + keyboard input, spoken replies.
 - **Telegram bot** (`telebot.py`) — a tool-calling agent you can text or voice-message from your phone.
 
 ## What it does
-- Accepts typed and spoken input — `ctrl+shift` to speak, `ctrl+alt`/`option` to type (both **after** pressing enter) in the CLI version.
-- Sends prompts to Groq (`openai/gpt-oss-120b`), with tool/function calling and automatic retry on rate limits.
-- Speaks replies via ElevenLabs (CLI version).
-- Telegram bot transcribes voice notes with Whisper (`whisper-large-v3-turbo`) and replies as text.
-- Persists conversation memory to `siri_memory.json` (say **"delete"** to clear it, **"bye"** to exit the CLI).
-- Ships a standalone MCP server (`functions/mcp_server.py`) exposing terminal access, file read/write/delete, and a simple markdown-based memory store (`MEMORY.md`) — usable by any MCP-compatible client, including Claude.
-- `-v` / `--verbose` flag for token usage logging (CLI).
+- Accepts typed and spoken input — `ctrl+shift` to speak, press `ctrl+alt(or option)` after hitting enter for the response.
+- Sends prompts to Groq (`openai/gpt-oss-120b`), with tool/function calling.
+- Voice notes are transcribed by Whisper (`whisper-large-v3-turbo`).
+- Say **"delete"** to clear the memory file, **"bye"** to exit.
 
 ## Setup
 ```bash
@@ -21,7 +18,7 @@ git clone https://github.com/BTG9161/SIri-All-Mighty.git
 cd SIri-All-Mighty
 uv sync
 ```
-If you don't have `uv`, copy the dependencies from `pyproject.toml` into a `requirements.txt` and `pip install -r requirements.txt` instead.
+If you don't have `uv`, copy the dependencies from `pyproject.toml` into a `requirements.txt`, and then- `pip install -r requirements.txt` instead.
 
 Create a `.env`:
 ```
@@ -35,7 +32,7 @@ Or set these as environment variables directly in your shell instead of using `.
 
 ## Usage
 
-**CLI voice assistant:**
+**Voice assistant:**
 ```bash
 python Siri2.py
 ```
@@ -44,9 +41,9 @@ python Siri2.py
 ```bash
 python telebot.py
 ```
-Only chat IDs listed in `CHAT_IDS` are allowed to talk to the bot.
+Only chat IDs listed in `CHAT_IDS`, in .env(or enviornment vars), are allowed to talk to the bot.
 
-**MCP server** (terminal/file/memory tools, standalone):
+**MCP server** (terminal/file/memory tools):
 ```bash
 python functions/mcp_server.py
 ```
@@ -54,17 +51,13 @@ python functions/mcp_server.py
 ## Requirements
 - macOS (uses `afplay` + `pyobjc` for the CLI version)
 - Groq + ElevenLabs API keys (Telegram bot only needs Groq)
-- A Telegram bot token + your chat ID, for the Telegram bot
-- Microphone for speech input (CLI)
-- No GPU/local model needed — designed for modest hardware
-
-## Status
-Active personal project, still evolving — expect rough edges. Currently working on persistent long-term memory via mem0 (hit some dependency snags on Intel macOS — torch/fastembed version mismatches — with OpenAI embeddings as the likely fallback).
+- Telegram bot token + your chat ID, for the Telegram bot
 
 ## Note(s)
-- `Siri.py` is not the main file — kept around for sentimental reasons, no real use.
-- Feel free to adapt `Siri2.py` for other platforms; not a priority here.
+- `Siri.py` is not the main file — kept because...why not!?, no real use.
+- You may change Siri.py for your system, because i won't.
 - `SETUP/` holds a helper script for finding your Telegram chat ID.
+- Don't use it if you don't trust it, it has terminl access.
 
 ## For Hack Club reviewers
-- AI (Claude) was used as a coding assistant throughout: debugging the dual-input threading logic, writing boilerplate for the Groq/ElevenLabs/Telegram API calls, building the MCP terminal server, and helping draft this README. The core architecture, feature decisions, and all the debugging of actual hardware/API issues were mine.
+- AI was used as a coding assistant throughout: debugging the dual-input threading logic, writing boilerplate for the Groq/ElevenLabs/Telegram API calls, building the MCP terminal server, and helping draft this README (just ideas for what to write). The architecture and features(not bugs!) were made by me.
