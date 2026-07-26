@@ -1,12 +1,12 @@
 import os
 import json
-from groq import Groq
-import logging
 import asyncio
+import logging
+from groq import Groq
+from telegram import Update
+from dotenv import load_dotenv
 from functions.agent_call import agent_call, final_call
 from functions.execute_tool_call import execute_tool_call
-from dotenv import load_dotenv
-from telegram import Update
 from telegram.ext import(
     ApplicationBuilder,
     ContextTypes,
@@ -18,7 +18,8 @@ from telegram.ext import(
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
-VOICE_PATH = os.getenv("DIR")
+DIR = os.getenv("DIR")
+VOICE_PATH = f"{DIR}/voice.ogg"
 BOT_TOKEN = os.getenv("TELEGRAM_API_KEY")
 USER_MEMORY_FILE = "siri_memory.json"
 ALLOWED_CHAT_IDS = [int(x) for x in os.getenv("CHAT_IDS").split(",")]

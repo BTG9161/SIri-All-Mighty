@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+DIR = os.getenv("DIR")
+USER_MEMORY_FILE = Path(DIR, "current_session.json").resolve()
+SESSIONS = Path(DIR, "sessions").resolve()
+
+session = input("Enter Session to be restored: ")
+
+try: 
+    session_path = Path(SESSIONS, session).resolve()
+
+    with USER_MEMORY_FILE.open('w', encoding="utf-8") as file:
+        with session_path.open('r', encoding="utf-8") as session_file:
+            file.write(session_file.read())
+
+except Exception as e:
+    print(e)
+
+os.remove(session_path)
+

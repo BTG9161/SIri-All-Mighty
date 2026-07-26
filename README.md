@@ -17,7 +17,9 @@ The project includes:
 git clone https://github.com/BTG9161/SIri-All-Mighty.git
 cd SIri-All-Mighty
 uv sync
+./install.sh
 ```
+`./install` makes you a global script for restoring sessions.
 If you don't have `uv`, copy the dependencies from `pyproject.toml` into a `requirements.txt`, and then- `pip install -r requirements.txt` instead.
 
 Create a `.env`:
@@ -26,7 +28,7 @@ GROQ_API_KEY=your_key_here
 ELEVENLABS_API_KEY=your_key_here
 TELEGRAM_API_KEY=your_telegram_bot_token
 CHAT_IDS=comma,separated,allowed,chat,ids
-DIR=path/to/save/incoming/voice/notes
+DIR=path/to/your/sandbox
 ```
 Or set these as environment variables directly in your shell instead of using `.env`.
 
@@ -57,7 +59,8 @@ python functions/mcp_server.py
 - `Siri.py` is not the main file — kept because...why not!?, no real use.
 - You may change Siri.py for your system, because i won't.
 - `SETUP/` holds a helper script for finding your Telegram chat ID.
-- Don't use it if you don't trust it, it has terminl access.
+- Don't use it if you don't trust it, it has terminl access. Or you can remove it by running 
+```rm functions/terminal_access.py```
 
 ## For Hack Club reviewers
 - AI was used as a coding assistant throughout: debugging the dual-input threading logic, writing boilerplate for the Groq/ElevenLabs/Telegram API calls, building the MCP terminal server, and helping draft this README (just ideas for what to write). The architecture and features(not bugs!) were made by me.

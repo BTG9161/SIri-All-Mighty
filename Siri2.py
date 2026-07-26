@@ -2,13 +2,13 @@ import os
 import sys
 import json
 import threading
+import subprocess
 from dotenv import load_dotenv
 from functions.STT import STT_loop
 from functions.memory import memory_access
-from functions.agent_call import agent_call
-from functions.agent_call import final_call
-from functions.eleven_call import eleven_call
 from functions.sessions import store_session
+from functions.eleven_call import eleven_call
+from functions.agent_call import agent_call, final_call
 from functions.execute_tool_call import execute_tool_call
 from functions.wake import global_listener, input_queue, type_done
 
@@ -113,13 +113,13 @@ while True:
     # Exit condition
     if 'bye'.lower() in prompt:
         print("bot> " + reply + "\n")
-        os.system("afplay output.mp3")
+        subprocess.run(["afplay", "output.mp3"])
         store_session(USER_MEMORY_FILE)
         break
 
     # Print reply and play audio
     print("bot> " + reply + "\n")
-    os.system("afplay output.mp3")
+    subprocess.Popen(["afplay", "output.mp3"])
 
     # Verbose logging (tokens, etc.)
     if verbose:
