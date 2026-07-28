@@ -43,7 +43,9 @@ python Siri2.py
 ```bash
 python telebot.py
 ```
-Only chat IDs listed in `CHAT_IDS`, in .env(or enviornment vars), are allowed to talk to the bot.
+- Only chat IDs listed in `CHAT_IDS`, in .env(or enviornment vars), are allowed to talk to the bot.
+- Or you can download the binaries(Siri2-macOS.zip and telebot-macOS.zip) and unzip them before executing.
+- Don’t forget to make it executable ```chmod +x Siri2-macOS```.
 
 **MCP server** (terminal/file/memory tools):
 ```bash
