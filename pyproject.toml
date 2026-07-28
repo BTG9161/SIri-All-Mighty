@@ -20,6 +20,12 @@ dependencies = [
     "sounddevice",
     "scipy",
     "setuptools>=82.0.1",
-    "webrtcvad-wheels>=2.0.14",
     "python-telegram-bot>=22.8",
+    "pyinstaller>=6.21.0",
+    "webrtcvad-wheels>=2.0.14",
+]
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.21.0",
 ]
