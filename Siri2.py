@@ -23,6 +23,11 @@ stt.start()
 USER_MEMORY_FILE = "current_session.json"
 memory = memory_access()
 
+def _resource_path(relative_path):
+    base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
+
 print("Chatting benings...")
 # Main loop: runs forever until user exits
 while True:
@@ -59,7 +64,7 @@ while True:
 
     else:
         # First run: define system prompts
-        with open("system_prompt.txt") as f:
+        with open(_resource_path("system_prompt.txt")) as f:
             system_prompt = f.read()
             system_prompt += f"""Long-term:
             {memory}"""

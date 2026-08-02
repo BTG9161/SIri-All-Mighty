@@ -5,7 +5,7 @@ a = Analysis(
     ['Siri2.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('functions/mcp_server_json_tool.json', 'functions'), ('system_prompt.txt', '.')],
     hiddenimports=[],
     hookspath=['./pyinstaller-hooks'],
     hooksconfig={},

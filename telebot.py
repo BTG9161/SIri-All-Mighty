@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import asyncio
 import logging
@@ -28,6 +29,11 @@ API_KEY = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=API_KEY)
 
 
+def _resource_path(relative_path):
+    base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Bot is up. Send me a message.")
 
@@ -49,7 +55,7 @@ async def handle_prompt(update: Update, prompt: str) -> str:
             user_messages = json.load(f)
     else:
         # First run: define system prompts
-        with open("system_prompt.txt") as f:
+        with open(_resource_path("system_prompt.txt")) as f:
             user_system_prompt = f.read()
         
         # Initialize conversation with system prompt
