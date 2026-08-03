@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO)
 DIR = os.getenv("DIR")
 VOICE_PATH = f"{DIR}/voice.ogg"
 BOT_TOKEN = os.getenv("TELEGRAM_API_KEY")
-USER_MEMORY_FILE = "siri_memory.json"
+USER_MEMORY_FILE = "current_session.json"
 ALLOWED_CHAT_IDS = [int(x) for x in os.getenv("CHAT_IDS").split(",")]
 API_KEY = os.getenv("GROQ_API_KEY")
 

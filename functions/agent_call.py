@@ -13,6 +13,12 @@ def agent_call(messages):
     max_attempts = 5
     for attempt in range(max_attempts): # attempt = 0, 1, 2,...
         try:
+            print("MODEL:", "openai/gpt-oss-120b")
+            print("MESSAGES:")
+            print(messages)
+            print("TOOLS:")
+            print(tools)
+
             response = client.chat.completions.create(
                     model="openai/gpt-oss-120b",
                     messages=messages,
