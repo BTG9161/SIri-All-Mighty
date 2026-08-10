@@ -72,3 +72,9 @@ python functions/mcp_server.py
 ## For Hack Club reviewers
 - AI was used as a coding assistant throughout: debugging the dual-input threading logic, writing boilerplate for the Groq/ElevenLabs/Telegram API calls, building the MCP terminal server, and helping draft this README (just ideas for what to write). The architecture and features(not bugs!) were made by me.
 - PLEASE review my project, i used Claude for making the binaries as there were problems and i was clueless, sorry.
+
+## Agent in action
+<img width="661" height="692" alt="Screenshot 2026-08-03 at 10 36 03 PM" src="https://github.com/user-attachments/assets/c31d4d90-103c-448b-aa6d-e540ef5727d9" />
+<img width="1142" height="884" alt="Screenshot 2026-08-10 at 11 18 35 PM" src="https://github.com/user-attachments/assets/4695f355-185e-4073-96f8-2732b0473754" />
+<img width="1440" height="900" alt="Screenshot 2026-07-24 at 10 03 13 PM" src="https://github.com/user-attachments/assets/90dcdfae-8b42-4625-a51c-46d2587e9cac" />
+
