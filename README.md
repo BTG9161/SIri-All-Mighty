@@ -6,11 +6,21 @@ The project includes:
 - **Voice assistant** (`Siri2.py`) — the original, mic + keyboard input, spoken replies.
 - **Telegram bot** (`telebot.py`) — a tool-calling agent you can text or voice-message from your phone.
 
-## What it does
-- Accepts typed and spoken input — `ctrl+shift` to speak, press `ctrl+alt(or option)` after hitting enter for the response.
-- Sends prompts to Groq (`openai/gpt-oss-120b`), with tool/function calling.
-- Voice notes are transcribed by Whisper (`whisper-large-v3-turbo`).
-- Say **"delete"** to clear the memory file, **"bye"** to exit.
+## Requirements
+- macOS (uses `afplay` + `pyobjc` for the CLI version)
+- Groq + ElevenLabs API keys (Telegram bot only needs Groq)
+- Telegram bot token + your chat ID, for the Telegram bot, use BotFather
+
+## What can it do
+- Siri can accept written input, but you should remember to press `ctrl+alt(or option)` after writing.
+- It can also accept spoken input through `ctrl+shift`.
+- You can also use it through telegram(it also takes spoken input).
+- It can also store memories, but it is a work-in-progress.
+
+## How it works
+- It uses Grok’s LLMs to generate output through APIs, and uses ElevenLabs to convert Grok’s output to speech.
+- The memory is stored on your device, in JSON format, along with the tool calls.
+- All the environment variables are stored in .env, but you can also store them temporarily for a single session using export).
 
 ## Setup
 ```bash
@@ -44,18 +54,13 @@ python Siri2.py
 python telebot.py
 ```
 - Only chat IDs listed in `CHAT_IDS`, in .env(or enviornment vars), are allowed to talk to the bot.
-- Or you can download the binaries(Siri2-macOS.zip and telebot-macOS.zip) and unzip them before executing.
+- Or you can download the binaries(Siri2-macOS.zip and telebot-macOS.zip), and unzip them before executing.
 - Don’t forget to make it executable ```chmod +x Siri2-macOS```.
 
 **MCP server** (terminal/file/memory tools):
 ```bash
 python functions/mcp_server.py
 ```
-
-## Requirements
-- macOS (uses `afplay` + `pyobjc` for the CLI version)
-- Groq + ElevenLabs API keys (Telegram bot only needs Groq)
-- Telegram bot token + your chat ID, for the Telegram bot
 
 ## Note(s)
 - `Siri.py` is not the main file — kept because...why not!?, no real use.
