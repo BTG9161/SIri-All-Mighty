@@ -18,7 +18,7 @@ The project includes:
 - It can also store memories, but it is a work-in-progress.
 
 ## How it works
-- It uses Grok’s LLMs to generate output through APIs, and uses ElevenLabs to convert Grok’s output to speech.
+- It uses Groq’s LLMs to generate output through APIs, and uses ElevenLabs to convert Groq’s output to speech.
 - The memory is stored on your device, in JSON format, along with the tool calls.
 - All the environment variables are stored in .env, but you can also store them temporarily for a single session using export).
 
