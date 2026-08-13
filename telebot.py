@@ -3,9 +3,11 @@ import sys
 import json
 import asyncio
 import logging
+from pathlib import Path
 from groq import Groq
 from telegram import Update
 from dotenv import load_dotenv
+from functions.telebot_wrapper import command, handler
 from functions.agent_call import agent_call, final_call
 from functions.execute_tool_call import execute_tool_call
 from telegram.ext import(
@@ -19,6 +21,8 @@ from telegram.ext import(
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
+env = Path(".env")
+env_text = env.read_text()
 DIR = os.getenv("DIR")
 VOICE_PATH = f"{DIR}/voice.ogg"
 BOT_TOKEN = os.getenv("TELEGRAM_API_KEY")
@@ -33,9 +37,20 @@ def _resource_path(relative_path):
     base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
-
+@command("start")
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Bot is up. Send me a message.")
+
+@command("approve")
+async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global env_text, env
+    
+    if context.args[0] == "28082008":
+        env_text = env_text.replace("CHAT_IDS=",
+                         f"CHAT_IDS= {context.args[1]}, ", 1)
+
+        env.write_text(env_text)
+        await update.message.reply_text("You've got it!")
 
 
 async def handle_prompt(update: Update, prompt: str) -> str:
@@ -138,8 +153,10 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-    app.add_handlers([CommandHandler("start", start),
-                      MessageHandler(filters.TEXT & ~ filters.COMMAND, handle_text),
+    for name, func in handler:
+        app.add_handler(CommandHandler(name, func))
+
+    app.add_handlers([MessageHandler(filters.TEXT & ~ filters.COMMAND, handle_text),
                       MessageHandler(filters.VOICE, handle_voice)])
 
     print("Bot running... Ctrl+C to stop.")
