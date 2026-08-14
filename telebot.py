@@ -51,7 +51,6 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         env.write_text(env_text)
         ALLOWED_CHAT_IDS.append(int(context.args[1]))
-        print(ALLOWED_CHAT_IDS)
         await update.message.reply_text("You've got it!")
 
 
@@ -124,7 +123,6 @@ async def handle_prompt(update: Update, prompt: str) -> str:
 
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    print(ALLOWED_CHAT_IDS)
     if update.effective_chat.id not in ALLOWED_CHAT_IDS:
         return
 
