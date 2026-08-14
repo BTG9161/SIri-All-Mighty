@@ -47,9 +47,11 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if context.args[0] == "28082008":
         env_text = env_text.replace("CHAT_IDS=",
-                         f"CHAT_IDS= {context.args[1]}, ", 1)
+                         f"CHAT_IDS= {int(context.args[1])}, ", 1)
 
         env.write_text(env_text)
+        ALLOWED_CHAT_IDS.append(int(context.args[1]))
+        print(ALLOWED_CHAT_IDS)
         await update.message.reply_text("You've got it!")
 
 
@@ -122,6 +124,7 @@ async def handle_prompt(update: Update, prompt: str) -> str:
 
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    print(ALLOWED_CHAT_IDS)
     if update.effective_chat.id not in ALLOWED_CHAT_IDS:
         return
 
