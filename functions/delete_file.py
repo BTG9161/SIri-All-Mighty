@@ -17,7 +17,7 @@ def delete_file(file_path, working_directory="/Users/bhupatejassingh/Siri") -> s
         os.remove(path_file)
     
     except Exception as e:
-        return f"{e} occured durin delting file {path_file}"
+        return f"{e} occured during delting file {path_file}"
 
     return f"{file_path} deleted successfully."
 

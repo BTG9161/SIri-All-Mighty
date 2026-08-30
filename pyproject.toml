@@ -1,6 +1,6 @@
 [project]
 name = "siri"
-version = "0.1.0"
+version = "0.1.2"
 description = "This project is a Siri-alternative but is like Openclaw, aptly named 'Siri All-Mighty'."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -23,6 +23,8 @@ dependencies = [
     "python-telegram-bot>=22.8",
     "pyinstaller>=6.21.0",
     "webrtcvad-wheels>=2.0.14",
+    "textual>=8.2.8",
+    "rich>=15.0.0",
 ]
 
 [dependency-groups]

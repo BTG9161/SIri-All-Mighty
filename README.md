@@ -40,6 +40,7 @@ TELEGRAM_API_KEY=your_telegram_bot_token
 CHAT_IDS=comma,separated,allowed,chat,ids
 DIR=path/to/your/sandbox
 ```
+- It is recommended that you set up your DIR. Howevet, */Siri is hardcoded.
 Or set these as environment variables directly in your shell instead of using `.env`.
 
 ## Usage

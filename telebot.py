@@ -3,11 +3,13 @@ import sys
 import json
 import asyncio
 import logging
-from pathlib import Path
 from groq import Groq
+from pathlib import Path
 from telegram import Update
 from dotenv import load_dotenv
-from functions.telebot_wrapper import command, handler
+from telefunc import approve
+from telefunc import store_session
+from telefunc.telebot_wrapper import command, handler
 from functions.agent_call import agent_call, final_call
 from functions.execute_tool_call import execute_tool_call
 from telegram.ext import(
@@ -40,19 +42,6 @@ def _resource_path(relative_path):
 @command("start")
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Bot is up. Send me a message.")
-
-@command("approve")
-async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global env_text, env
-    
-    if context.args[0] == "28082008":
-        env_text = env_text.replace("CHAT_IDS=",
-                         f"CHAT_IDS= {int(context.args[1])}, ", 1)
-
-        env.write_text(env_text)
-        ALLOWED_CHAT_IDS.append(int(context.args[1]))
-        await update.message.reply_text("You've got it!")
-
 
 async def handle_prompt(update: Update, prompt: str) -> str:
     loop = asyncio.get_running_loop()

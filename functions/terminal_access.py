@@ -17,4 +17,5 @@ def terminal_access(content) -> str:
     
     
     except Exception as e:
-        return str(e)
+        return f"{e} occured during executing command."
+
