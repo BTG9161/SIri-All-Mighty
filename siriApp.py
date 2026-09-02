@@ -4,20 +4,25 @@ from textual.containers import ScrollableContainer, Horizontal
 from textual.widgets import Static, Input, TextArea
 
 class SiriInput(TextArea):
-    def on_key(self, event):
-            global user_input
+    async def on_key(self, event):
             if event.key == "enter":
                 event.prevent_default()
 
                 prompt = self.text
 
-                handle_prompt(prompt)
+                response = handle_prompt(prompt)
+                await self.app.siri_response(response)
                 self.text = ""
                 
             elif event.key == "shift+enter":
-                self.text + "\n"
+                self.insert("\n")
 
 class SiriApp(App):
+    async def siri_response(self, response):
+        siri = self.query_one("#siri", ScrollableContainer)
+        await siri.mount(Static("Siri> " + response))
+
+        siri.scroll_end(animate=True)
 
     # When we run the SiriApp, it first reads the CSS as a set of rules and then creates the container according to the rules
     CSS = """
@@ -44,21 +49,14 @@ class SiriApp(App):
       # padding is spaces widget's border and its content, padding 1 is 1 cell of space between the border and the content
 
     def compose(self) -> ComposeResult:
-        global user_input
         with Horizontal():
             with ScrollableContainer(id="siri"):
-                yield Static("Siri>")
+                yield Static("")
 
             with ScrollableContainer(id="terminal"):
                 yield Static("Terminal")
 
         yield SiriInput(placeholder="Type here...", id="user")
-
-    async def siri_response(self, response):
-        siri = self.query_one("#siri", ScrollableContainer)
-        await siri.mount(Static(response))
-
-        self.siri_response("Hi")
 
 
 if __name__ == "__main__":

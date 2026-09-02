@@ -72,6 +72,7 @@ python functions/mcp_server.py
 
 ## For Hack Club reviewers
 - AI was used as a coding assistant throughout: debugging the dual-input threading logic, writing boilerplate for the Groq/ElevenLabs/Telegram API calls, building the MCP terminal server, and helping draft this README (just ideas for what to write). The architecture and features(not bugs!) were made by me.
+- There are some features that aren't covered in the READEME, like siriApp.py, please ignore, for the review the siri2.py will not be edited as required by siriApp.py, i commited the new features by mistake, so it might not work on terminal. 
 - PLEASE review my project, i used Claude for making the binaries as there were problems and i was clueless, sorry.
 
 ## Agent in action
