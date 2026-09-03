@@ -14,7 +14,8 @@ The project includes:
 ## What can it do
 - Siri can accept written input, but you should remember to press `ctrl+alt(or option)` after writing.
 - It can also accept spoken input through `ctrl+shift`.
-- You can also use it through telegram(it also takes spoken input).
+- You can also use it through Telegram(it also takes spoken input).
+- There is also a command for adding chat IDs in Telegram through /approve pass ID
 - It can also store memories, but it is a work-in-progress.
 
 ## How it works
@@ -37,11 +38,13 @@ Create a `.env`:
 GROQ_API_KEY=your_key_here
 ELEVENLABS_API_KEY=your_key_here
 TELEGRAM_API_KEY=your_telegram_bot_token
+PASS=secret_password
 CHAT_IDS=comma,separated,allowed,chat,ids
 DIR=path/to/your/sandbox
 ```
-- It is recommended that you set up your DIR. Howevet, */Siri is hardcoded.
+- It is recommended that you set up your DIR.
 Or set these as environment variables directly in your shell instead of using `.env`.
+- PASS is the password for telegram approving IDs authentication
 
 ## Usage
 
