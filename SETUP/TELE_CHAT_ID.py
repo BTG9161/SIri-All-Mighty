@@ -1,3 +1,5 @@
+# This only works if you first send a msg to your bot.
+
 import os
 import requests
 from dotenv import load_dotenv

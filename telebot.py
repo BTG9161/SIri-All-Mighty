@@ -23,8 +23,6 @@ from telegram.ext import(
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
-env = Path(".env")
-env_text = env.read_text()
 DIR = os.getenv("DIR")
 VOICE_PATH = f"{DIR}/voice.ogg"
 BOT_TOKEN = os.getenv("TELEGRAM_API_KEY")

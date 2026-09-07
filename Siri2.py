@@ -12,7 +12,6 @@ from functions.agent_call import agent_call, final_call
 from functions.execute_tool_call import execute_tool_call
 from functions.wake import global_listener, input_queue, type_done
 
-
 # Load environment variables (API keys, etc.)
 load_dotenv()
 prompt_list = []
@@ -23,28 +22,23 @@ stt.start()
 USER_MEMORY_FILE = "current_session.json"
 memory = memory_access()
 
+
 def _resource_path(relative_path):
     base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
 
 print("Chatting benings...")
-# Main loop: runs forever until user exits
-while True:
+def handle_prompt(prompt):
     # Take user input
-    type_done.clear()
-    type_done.wait()
-    prompt = ""
 
     chunks = []
 
     while not input_queue.empty():
-        chunks.append(input_queue.get()) # .get() fetches the 
+        chunks.append(input_queue.get()) # .get() fetches the next item from the queue and removes it from the queue. If the queue is empty, it will block until an item is available.
     
-    prompt = " ".join(chunks)
-
     if not prompt.strip():
-        continue        
+        return
     
     # Verbose flag (only works if script called with specific CLI args)
     verbose=False
@@ -55,7 +49,7 @@ while True:
     if prompt.lower() == "delete" and os.path.exists(USER_MEMORY_FILE):
         os.remove(USER_MEMORY_FILE)
         print("Memory file deleted!")
-        break
+        return
 
     # Load existing conversation memory if it exists
     if os.path.exists(USER_MEMORY_FILE):
@@ -113,14 +107,16 @@ while True:
         user_messages.append({"role": "assistant", "content": Response})
         with open(USER_MEMORY_FILE, "w") as f:
             json.dump(user_messages, f, indent=2)
-    
+
+    return reply
+    """
     eleven_call(reply)
     # Exit condition
     if 'bye'.lower() in prompt:
         print("bot> " + reply + "\n")
         subprocess.run(["afplay", "output.mp3"])
         store_session(USER_MEMORY_FILE)
-        break
+        return
 
     # Print reply and play audio
     print("bot> " + reply + "\n")
@@ -131,4 +127,5 @@ while True:
         print(f"User prompt: {prompt}")
         print(f"Prompt tokens: {response.usage.prompt_tokens}")
         print(f"Response tokens: {response.usage.completion_tokens}")
+"""
 
