@@ -1,7 +1,9 @@
+from textual import work
 from Siri2 import handle_prompt
+from functions.STT import STT
 from textual.app import App, ComposeResult
 from textual.containers import ScrollableContainer, Horizontal
-from textual.widgets import Static, Markdown, TextArea, LoadingIndicator
+from textual.widgets import Static, Markdown, TextArea, Button
 
 
 class Spinner(Static):
@@ -10,37 +12,79 @@ class Spinner(Static):
         self.current_state = 0
 
         self.update(f"{self.spinner_states[self.current_state]} Running...")
-        self.set_interval(0.1, self.update_spinner)
+        self.timer = self.set_interval(0.1, self.update_spinner)
 
     def update_spinner(self):
         self.current_state = (self.current_state + 1) % len(self.spinner_states)
-        self.update(self.spinner_states[self.current_state])
+        self.update(f"{self.spinner_states[self.current_state]} Running...")
+
+
+
 
 class SiriInput(TextArea):
     async def on_key(self, event):
-            global prompt
+            terminal = self.app.query_one("#terminal", ScrollableContainer)
+            spinner = Spinner()            
             if event.key == "enter":
                 event.prevent_default()
+                
 
-                prompt = self.text
-                if prompt == "delete":
-                    handle_prompt(prompt)
+                text_prompt = self.text
+                if text_prompt == "delete":
+                    handle_prompt(text_prompt)
+                    self.text = ""
                     return
 
-                response = handle_prompt(prompt)
+                prompt = text_prompt# + voice_prompt
+                self.text = prompt
+
+                await terminal.mount(spinner)
+                worker = self.app.process_prompt(prompt)
+                await worker.wait()
+                handler = worker.result
+
+                response = handler.response
+
+                if handler.terminal == None:
+                    terminal_data = ""
+                else:
+                    terminal_data = handler.terminal
+                
                 await self.app.convo_update(prompt, response)
+                await self.app.terminal_update(terminal_data)
+                await spinner.remove()
+
                 self.text = ""
                 
             elif event.key == "shift+enter":
                 self.insert("\n")
 
+
+class Voice(Button):
+    def on_button_pressed(self, event: Button.Pressed):
+        prompt = STT()
+
+
 class SiriApp(App):
+    def __init__(self):
+        super().__init__()
+        self.spin: bool
+
+    @work(thread=True)
+    def process_prompt(self, prompt):
+        handler = handle_prompt(prompt)
+        return handler
+
     async def convo_update(self, prompt, response):
         siri = self.query_one("#convo", ScrollableContainer)
         await siri.mount(Static("user> " + prompt, classes="user"))
-        await siri.mount(Markdown("Siri> " + response, classes="convo"))
+        await siri.mount(Markdown("Siri> " + response, classes="siri"))
 
         siri.scroll_end(animate=True)
+
+    async def terminal_update(self, terminal_data):
+        terminal = self.query_one("#terminal", ScrollableContainer)
+        await terminal.mount(Markdown(terminal_data + "\n", classes="terminal"))
 
     # When we run the SiriApp, it first reads the CSS as a set of rules and then creates the container according to the rules
     CSS = """
@@ -74,7 +118,7 @@ class SiriApp(App):
         width: 70%;
         }
         """
-      # padding is spaces widget's border and its content, padding 1 is 1 cell of space between the border and the content
+      # padding is spaces between the widget's border and its content, padding 1 is 1 cell of space between the border and the content
 
     def compose(self) -> ComposeResult:
         with Horizontal():
@@ -82,11 +126,10 @@ class SiriApp(App):
                 pass
 
             with ScrollableContainer(id="terminal"):
-                yield Static("""Siri Terminal
-                Here\u2019s a more detHere\u2019s a more detailed look at how you can use a header with points underneath:\n\n### 1. Organizing Content  \n- **Clear hierarchy:** A header creates a visual anchor, making it easy to see where a section starts and ends.  \n- **Logical grouping:** Related bullet points or numbered items stay together, helping readers follow the flow.\n\n### 2. Outlining Essays or Reports  \n- **Structure:** Use headers for each major section (e.g., Introduction, Methods, Results).  \n- **Sub\u2011points:** List the key ideas you\u2019ll cover in each section, which can later become paragraphs.\n\n### 3. Creating Checklists & To\u2011Do Lists  \n- **Actionable items:** Each point can be a task, and the header tells you what the list is for (e.g., \u201cMorning Routine\u201d).  \n- **Progress tracking:** You can tick off items as you complete them.\n\n### 4. Summarizing Information  \n- **Quick reference:** A header like \u201cKey Takeaways\u201d followedailed look at how you can use a header with points underneath:\n\n### 1. Organizing Content  \n- **Clear hierarchy:** A header creates a visual anchor, making it easy to see where a section starts and ends.  \n- **Logical grouping:** Related bullet points or numbered items stay together, helping readers follow the flow.\n\n### 2. Outlining Essays or Reports  \n- **Structure:** Use headers for each major section (e.g., Introduction, Methods, Results).  \n- **Sub\u2011points:** List the key ideas you\u2019ll cover in each section, which can later become paragraphs.\n\n### 3. Creating Checklists & To\u2011Do Lists  \n- **Actionable items:** Each point can be a task, and the header tells you what the list is for (e.g., \u201cMorning Routine\u201d).  \n- **Progress tracking:** You can tick off items as you complete them.\n\n### 4. Summarizing Information  \n- **Quick reference:** A header like \u201cKey Takeaways\u201d followed""")
-                yield LoadingIndicator(id="loading", )
+                yield Static("Terminal \n")
 
         yield SiriInput(placeholder="Type here...", id="user")
+        yield Voice(label="Voice",  id="SiriInput")
 
 
 if __name__ == "__main__":

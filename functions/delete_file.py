@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 
-def delete_file(file_path, working_directory="/Users/bhupatejassingh/Siri") -> str:
+def delete_file(file_path, working_directory="") -> str:
     """To delete the specified file.
     ARGS:
         file_path: The file path relative to the working directory.

@@ -15,7 +15,5 @@ RULES:
 
 ADITIONAL INFORMATION:
     The default working directory is */Siri
-    The User uses macOS Monterey so, use the terminal commands accordingly.
-
-
+    The User uses Omarchy Linux so, use the terminal commands accordingly.
 
