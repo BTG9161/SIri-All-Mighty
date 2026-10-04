@@ -4,15 +4,15 @@ A personal DIY voice/chat assistant powered by **Groq** (reasoning) and **Eleven
 
 ## The project has two parts:
 
-With TUI:
-### siriApp.py:
+### With TUI:
+siriApp.py:
 - **Voice command** — This doesn't fully support voice input, and you may encounter errors.
 - **Normal input** — This includes multiline pormpts.
 
-### Telegram bot (`telebot.py`):
+Telegram bot (`telebot.py`):
 - A tool-calling agent you can text or voice-message from your phone using Telegram.
 
-Without TUI:
+### Without TUI:
 - This is the older version of Siri All-Mighty which doesn't include any UI, just simple terminal.
 - The version of the build is 0.1.1, you can find the source code, or the zip file in releases.
 - **Voice assistant** (`Siri2.py`) — the original, mic + keyboard input, spoken replies, also includes multiline prompts.  
