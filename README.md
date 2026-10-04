@@ -26,6 +26,7 @@ Telegram bot (`telebot.py`):
 ## What can it do
 - It can use the terminal to do almost anything, so you should use it wisely.
 - Siri can also play songs if you have the correct setup for yt-dlp.
+- Siri can also do websearch
 - It can return responses in **Markdown**.
 - Siri can accept written input, but you should remember to press `ctrl+alt(or option)` after writing, for older build.
 - It can also accept spoken input through `ctrl+shift`, for older build.
