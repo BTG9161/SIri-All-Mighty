@@ -4,6 +4,7 @@ from pathlib import Path
 
 def delete_file(file_path, working_directory="") -> str:
     """To delete the specified file.
+    
     ARGS:
         file_path: The file path relative to the working directory.
         working_directory: The working directory of the file, you don't need to specify it unless stated otherwise."""

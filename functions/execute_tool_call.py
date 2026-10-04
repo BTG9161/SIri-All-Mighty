@@ -2,11 +2,17 @@ import json
 from functions.delete_file import delete_file
 from functions.write_file import write_file
 from functions.terminal_access import terminal_access
+from functions.memory import memory
+from functions.read_file import read_file
+from functions.player import player
 
 
 available_functions={"delete_file": delete_file,
                      "write_file": write_file,
                      "terminal_access": terminal_access,
+                     "memory": memory,
+                     "read_file": read_file,
+                     "player": player,
 }
 
 def execute_tool_call(tool_call):

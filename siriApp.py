@@ -1,10 +1,12 @@
+from queue import Queue
 from textual import work
-from Siri2 import handle_prompt
 from functions.STT import STT
+from Siri2 import handle_prompt
 from textual.app import App, ComposeResult
 from textual.containers import ScrollableContainer, Horizontal
-from textual.widgets import Static, Markdown, TextArea, Button
+from textual.widgets import Static, Markdown, TextArea, Button, LoadingIndicator
 
+input_queue = Queue()
 
 class Spinner(Static):
     def on_mount(self):
@@ -19,12 +21,19 @@ class Spinner(Static):
         self.update(f"{self.spinner_states[self.current_state]} Running...")
 
 
-
-
 class SiriInput(TextArea):
     async def on_key(self, event):
+            global voice_prompt
+            voice_prompt = ""
+            
             terminal = self.app.query_one("#terminal", ScrollableContainer)
-            spinner = Spinner()            
+            spinner = Spinner()      
+
+            if self.text == "":
+                pass
+            else:
+                input_queue.put(self.text)
+                  
             if event.key == "enter":
                 event.prevent_default()
                 
@@ -35,7 +44,7 @@ class SiriInput(TextArea):
                     self.text = ""
                     return
 
-                prompt = text_prompt# + voice_prompt
+                prompt = text_prompt + voice_prompt
                 self.text = prompt
 
                 await terminal.mount(spinner)
@@ -51,7 +60,9 @@ class SiriInput(TextArea):
                     terminal_data = handler.terminal
                 
                 await self.app.convo_update(prompt, response)
-                await self.app.terminal_update(terminal_data)
+                for data in terminal_data:
+                    await self.app.terminal_update(data)
+
                 await spinner.remove()
 
                 self.text = ""
@@ -62,7 +73,16 @@ class SiriInput(TextArea):
 
 class Voice(Button):
     def on_button_pressed(self, event: Button.Pressed):
-        prompt = STT()
+        self.loading = True
+        global voice_prompt
+        
+        voice_prompt = ""
+        
+        voice_prompt = STT()
+        
+        input_queue.put(voice_prompt)
+        self.loading = False
+
 
 
 class SiriApp(App):

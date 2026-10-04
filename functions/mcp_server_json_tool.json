@@ -3,7 +3,7 @@
     "type": "function",
     "function": {
       "name": "delete_file",
-      "description": "To delete the specified file.\n    ARGS:\n        file_path: The file path relative to the working directory.\n        working_directory: The working directory of the file, you don't need to specify it unless stated otherwise.",
+      "description": "To delete the specified file.\n    \n    ARGS:\n        file_path: The file path relative to the working directory.\n        working_directory: The working directory of the file, you don't need to specify it unless stated otherwise.",
       "parameters": {
         "properties": {
           "file_path": {
@@ -56,7 +56,7 @@
     "type": "function",
     "function": {
       "name": "terminal_access",
-      "description": "For executing terminal commands.\n    ARGS:\n        content: The commands for terminal.",
+      "description": "For executing terminal commands.\n    \n    ARGS:\n        content: The commands for terminal.",
       "parameters": {
         "properties": {
           "content": {
@@ -118,6 +118,26 @@
           "file_path"
         ],
         "title": "read_fileArguments",
+        "type": "object"
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "player",
+      "description": "To Play a specified song.\n\n    ARGS:\n        SONG: The song to play",
+      "parameters": {
+        "properties": {
+          "SONG": {
+            "title": "SONG",
+            "type": "string"
+          }
+        },
+        "required": [
+          "SONG"
+        ],
+        "title": "playerArguments",
         "type": "object"
       }
     }

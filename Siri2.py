@@ -33,7 +33,7 @@ class handle_prompt():
     def __init__(self, prompt):
         self.prompt = prompt
         self.response = None
-        self.terminal = None
+        self.terminal = []
         self.process_prompt()
 
     def process_prompt(self):
@@ -89,7 +89,7 @@ class handle_prompt():
                 function_response = execute_tool_call(tool_call)
                 
                 # Add tool result to messages
-                self.terminal = str(function_response)
+                self.terminal.append(str(function_response))
                 user_messages.append({
                     "role": "tool",
                     "tool_call_id": tool_call.id,

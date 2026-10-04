@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from scipy.io.wavfile import write
 from .wake import wake_done, input_queue
 
-vad = webrtcvad.Vad(2) # aggressiveness 0-3 
+vad = webrtcvad.Vad(3) # aggressiveness 0-3 
 
 recording = False
 sr=32000
