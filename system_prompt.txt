@@ -17,6 +17,3 @@ RULES:
 ADITIONAL INFORMATION:
     The default working directory is */Siri
 
-NOTES:
-- The user may speak in Punjabi, and you may too, but never use Punjabi letters, always write Romanized Punjabi.
-
