@@ -2,15 +2,14 @@
 
 
 a = Analysis(
-    ['telebot.py'],
+    ['siriApp.py'],
     pathex=[],
     binaries=[],
-    datas=[
-    ('functions/mcp_server_json_tool.json', 'functions'),
+    datas=[('functions/mcp_server_json_tool.json', 'functions'),
     ('system_prompt.txt', '.'),
     ],
     hiddenimports=[],
-    hookspath=[],
+    hookspath=['hooks'],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
@@ -24,7 +23,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='telebot',
+    name='siriApp',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -43,5 +42,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='telebot',
+    name='siriApp',
 )
