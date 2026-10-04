@@ -17,6 +17,7 @@ wheels/
 test*
 *_test*
 output*
+wow.txt
 Siri.py
 note.txt
 voice.ogg
@@ -25,4 +26,5 @@ sessions/*
 Siri.code-workspace
 current_session.json
 functions/mcp_server.py
+system_function_prompt.txt
 Siri All-Mighty Workspace.code-workspace

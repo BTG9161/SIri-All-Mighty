@@ -17,7 +17,7 @@ def agent_call(messages):
                     model="openai/gpt-oss-120b",
                     messages=messages,
                     tools=tools,
-                    temperature=0.0,  # Keep temperature between 0.0 - 0.5 for best tool calling results
+                    temperature=0.3,  # Keep temperature between 0.0 - 0.5 for best tool calling results
                     tool_choice="auto",
                     max_completion_tokens=4096,
                 )

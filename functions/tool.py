@@ -20,3 +20,8 @@ def _resource_path(relative_path):
 with open(_resource_path("functions/mcp_server_json_tool.json")) as f:
     tools = [tool(t) for t in json.load(f)]
 
+tools.append({'type': "browser_search"})
+
+if __name__ == "__main__":
+    print (tools)
+

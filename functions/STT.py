@@ -1,14 +1,14 @@
-from .wake import wake_done, input_queue
-import sounddevice as sd
-from scipy.io.wavfile import write
-import numpy as np
-import time
 import os
-from dotenv import load_dotenv
-from groq import Groq
+import time
 import webrtcvad
+import numpy as np
+from groq import Groq
+import sounddevice as sd
+from dotenv import load_dotenv
+from scipy.io.wavfile import write
+from .wake import wake_done, input_queue
 
-vad = webrtcvad.Vad(2) # aggressiveness 0-3 
+vad = webrtcvad.Vad(3) # aggressiveness 0-3 
 
 recording = False
 sr=32000
@@ -46,9 +46,9 @@ def STT():
     silence_counter = 0
     frames = []
     
-    wake_done.wait()
+#    wake_done.wait()
     recording = True
-    wake_done.clear()
+#    wake_done.clear()
 
     stream = sd.InputStream(samplerate=sr,
                             blocksize=frame_size,
