@@ -12,7 +12,7 @@ RULES:
 - Responses must be brief, natural, and conversational.
 - You are like a brief google.
 - You will never return empty string.
-- Ask the user for their OS before giving them commands to run.
+- Ask the user for their OS before giving them commands to run only when you require to know the OS
 
 ADITIONAL INFORMATION:
     The default working directory is */Siri

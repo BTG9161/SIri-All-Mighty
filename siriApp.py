@@ -1,7 +1,9 @@
+from functions.execute_tool_call import player
 from queue import Queue
 from textual import work
 from functions.STT import STT
 from Siri2 import handle_prompt
+from functions.player import Player
 from textual.app import App, ComposeResult
 from textual.containers import ScrollableContainer, Horizontal
 from textual.widgets import Static, Markdown, TextArea, Button, LoadingIndicator
@@ -23,34 +25,38 @@ class Spinner(Static):
 
 class SiriInput(TextArea):
     async def on_key(self, event):
-            global voice_prompt
-            voice_prompt = ""
-            
-            terminal = self.app.query_one("#terminal", ScrollableContainer)
-            spinner = Spinner()      
+            global voice_prompt, prompt
 
-            if self.text == "":
-                pass
-            else:
-                input_queue.put(self.text)
-                  
+            prompt = ""
+
+            terminal = self.app.query_one("#terminal", ScrollableContainer)
+            spinner = Spinner()
+
+            input_queue.put(self.text)
+            while not input_queue.empty():
+                prompt += input_queue.get()
+
+
             if event.key == "enter":
                 event.prevent_default()
                 
 
                 text_prompt = self.text
+
                 if text_prompt == "delete":
                     handle_prompt(text_prompt)
                     self.text = ""
                     return
-
-                prompt = text_prompt + voice_prompt
+                
                 self.text = prompt
 
                 await terminal.mount(spinner)
-                worker = self.app.process_prompt(prompt)
-                await worker.wait()
-                handler = worker.result
+                if prompt is None:
+                    pass
+                else:
+                    worker = self.app.process_prompt(prompt)
+                    await worker.wait()
+                    handler = worker.result
 
                 response = handler.response
 
@@ -71,7 +77,7 @@ class SiriInput(TextArea):
                 self.insert("\n")
 
 
-class Voice(Button):
+class SiriVoice(Button):
     def on_button_pressed(self, event: Button.Pressed):
         self.loading = True
         global voice_prompt
@@ -80,9 +86,25 @@ class Voice(Button):
         
         voice_prompt = STT()
         
-        input_queue.put(voice_prompt)
+
+        siriInput = self.app.query_one(SiriInput)
+        siriInput.insert(voice_prompt)
         self.loading = False
 
+
+class Player_Button(Button):
+    def __init__(self, *args, **kwargs): # Take the args and kwargs
+        super().__init__(*args, **kwargs)# And pass them to the parent class
+        self.paused = False
+
+    def on_button_pressed(self, event: Button.Pressed):
+        if self.paused:
+            player.resume()
+            self.paused = False
+
+        else:
+            player.pause()
+            self.paused = True
 
 
 class SiriApp(App):
@@ -149,7 +171,9 @@ class SiriApp(App):
                 yield Static("Terminal \n")
 
         yield SiriInput(placeholder="Type here...", id="user")
-        yield Voice(label="Voice",  id="SiriInput")
+        yield SiriVoice(label="Voice",  id="SiriInput")
+        yield Player_Button(label="Pause/Play", id="Player")
+
 
 
 if __name__ == "__main__":

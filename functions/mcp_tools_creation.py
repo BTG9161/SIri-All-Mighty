@@ -6,7 +6,7 @@ from write_file import write_file
 from terminal_access import terminal_access
 from memory import memory
 from read_file import read_file
-from player import player
+from player import Player
 from mcp.server.fastmcp import FastMCP
 
 
@@ -17,7 +17,7 @@ mcp.tool()(write_file)
 mcp.tool()(terminal_access)
 mcp.tool()(memory)
 mcp.tool()(read_file)
-mcp.tool()(player)
+mcp.tool()(Player.play)
 
 tools = []
 tools_string = ""

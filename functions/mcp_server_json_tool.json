@@ -125,10 +125,14 @@
   {
     "type": "function",
     "function": {
-      "name": "player",
-      "description": "To Play a specified song.\n\n    ARGS:\n        SONG: The song to play",
+      "name": "play",
+      "description": "To Play a specified song.\n\n        ARGS:\n            SONG: The song to play",
       "parameters": {
         "properties": {
+          "self": {
+            "title": "self",
+            "type": "string"
+          },
           "SONG": {
             "title": "SONG",
             "type": "string"
@@ -137,7 +141,7 @@
         "required": [
           "SONG"
         ],
-        "title": "playerArguments",
+        "title": "playArguments",
         "type": "object"
       }
     }
