@@ -18,7 +18,8 @@ Telegram bot (`telebot.py`):
 - **Voice assistant** (`Siri2.py`) — the original, mic + keyboard input, spoken replies, also includes multiline prompts.  
 
 ## Requirements
-- yt-dlp for playing songs.
+- `yt-dlp` for downloading songs temporarily.
+- `mpv` for playing songs.
 - macOS (uses `afplay` + `pyobjc` for the CLI version) for the older build.
 - Groq + ElevenLabs API keys (Telegram bot only needs Groq).
 - Telegram bot token + your chat ID, for the Telegram bot, use BotFather.
