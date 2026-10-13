@@ -1,10 +1,11 @@
-from functions.execute_tool_call import player
+import json
 from queue import Queue
 from textual import work
 from functions.STT import STT
 from Siri2 import handle_prompt
 from functions.player import Player
 from textual.app import App, ComposeResult
+from functions.execute_tool_call import player
 from textual.containers import ScrollableContainer, Horizontal
 from textual.widgets import Static, Markdown, TextArea, Button, LoadingIndicator
 
@@ -25,56 +26,56 @@ class Spinner(Static):
 
 class SiriInput(TextArea):
     async def on_key(self, event):
-            global voice_prompt, prompt
+        global voice_prompt, prompt
 
-            prompt = ""
+        prompt = ""
 
-            terminal = self.app.query_one("#terminal", ScrollableContainer)
-            spinner = Spinner()
+        terminal = self.app.query_one("#terminal", ScrollableContainer)
+        spinner = Spinner()
 
-            input_queue.put(self.text)
-            while not input_queue.empty():
-                prompt += input_queue.get()
+        input_queue.put(self.text)
+        while not input_queue.empty():
+            prompt += input_queue.get()
 
 
-            if event.key == "enter":
-                event.prevent_default()
-                
+        if event.key == "enter":
+            event.prevent_default()
+            
 
-                text_prompt = self.text
+            text_prompt = self.text
 
-                if text_prompt == "delete":
-                    handle_prompt(text_prompt)
-                    self.text = ""
-                    return
-                
-                self.text = prompt
-
-                await terminal.mount(spinner)
-                if prompt is None:
-                    pass
-                else:
-                    worker = self.app.process_prompt(prompt)
-                    await worker.wait()
-                    handler = worker.result
-
-                response = handler.response
-
-                if handler.terminal == None:
-                    terminal_data = ""
-                else:
-                    terminal_data = handler.terminal
-                
-                await self.app.convo_update(prompt, response)
-                for data in terminal_data:
-                    await self.app.terminal_update(data)
-
-                await spinner.remove()
-
+            if text_prompt == "delete":
+                handle_prompt(text_prompt)
                 self.text = ""
-                
-            elif event.key == "shift+enter":
-                self.insert("\n")
+                return
+            
+            self.text = prompt
+
+            await terminal.mount(spinner)
+            if prompt is None:
+                pass
+            else:
+                worker = self.app.process_prompt(prompt)
+                await worker.wait()
+                handler = worker.result
+
+            response = handler.response
+
+            if handler.terminal == None:
+                terminal_data = ""
+            else:
+                terminal_data = handler.terminal
+            
+            await self.app.convo_update(prompt, response)
+            for data in terminal_data:
+                await self.app.terminal_update(data)
+
+            await spinner.remove()
+
+            self.text = ""
+            
+        elif event.key == "shift+enter":
+            self.insert("\n")
 
 
 class SiriVoice(Button):
