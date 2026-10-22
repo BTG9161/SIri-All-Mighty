@@ -15,7 +15,7 @@ def read_file(file_path: str, working_directory = DIR) -> str:
     file = Path(wd, file_path).resolve()
 
     if not os.path.exists(file):
-        return f"File doesn't exist, apparently"
+        return f"File doesn't exist, apparently."
 
     try:
         with open(file, 'r') as f:

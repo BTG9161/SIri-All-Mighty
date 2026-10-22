@@ -3,7 +3,6 @@ import sys
 import json
 import threading
 import subprocess
-from dotenv import load_dotenv
 from functions.STT import STT_loop
 from functions.memory import memory_access
 from functions.sessions import store_session
@@ -13,7 +12,6 @@ from functions.execute_tool_call import execute_tool_call
 from functions.wake import global_listener, input_queue, type_done
 
 # Load environment variables (API keys, etc.)
-load_dotenv()
 prompt_list = []
 listener = global_listener()
 stt = threading.Thread(target=STT_loop, daemon=True) # daemon=True marks a thread as a background/daemon thread — it tells Python's threading system
@@ -121,15 +119,14 @@ class handle_prompt():
                 json.dump(user_messages, f, indent=2)
 
         self.response = reply
-    """
-    eleven_call(reply)
-    # Exit condition
-    if 'bye'.lower() in prompt:
-        print("bot> " + reply + "\n")
-        subprocess.run(["afplay", "output.mp3"])
-        store_session(USER_MEMORY_FILE)
-        return
+        
+        # Exit condition
+        if 'bye' in self.prompt.lower():
+            store_session(USER_MEMORY_FILE)
 
+        
+
+"""
     # Print reply and play audio
     print("bot> " + reply + "\n")
     subprocess.Popen(["afplay", "output.mp3"])

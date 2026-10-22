@@ -1,4 +1,4 @@
-# Run this whenever a new tool is created, along with updating execute_tool_call
+# Run this whenever a new tool is created, along with updating execute_tool_call if the function name is changed.
 
 import json 
 from delete_file import delete_file

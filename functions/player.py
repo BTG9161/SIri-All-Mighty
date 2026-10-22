@@ -27,7 +27,7 @@ class Player:
             query,
         ])
 
-        self.mpv = subprocess.Popen([
+        self.mpv = subprocess.Popen([    # Like .run(), but is asynchronous and gives more control.
             "mpv",
             "--no-terminal",
             song

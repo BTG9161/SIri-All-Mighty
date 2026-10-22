@@ -1,4 +1,5 @@
 import json
+import subprocess
 from queue import Queue
 from textual import work
 from functions.STT import STT
@@ -6,10 +7,13 @@ from Siri2 import handle_prompt
 from functions.player import Player
 from textual.app import App, ComposeResult
 from functions.execute_tool_call import player
+from functions.eleven_call import eleven_call
 from textual.containers import ScrollableContainer, Horizontal
 from textual.widgets import Static, Markdown, TextArea, Button, LoadingIndicator
 
 input_queue = Queue()
+
+voice_output = False
 
 class Spinner(Static):
     def on_mount(self):
@@ -26,7 +30,7 @@ class Spinner(Static):
 
 class SiriInput(TextArea):
     async def on_key(self, event):
-        global voice_prompt, prompt
+        global voice_prompt, prompt, voice_output
 
         prompt = ""
 
@@ -46,6 +50,16 @@ class SiriInput(TextArea):
 
             if text_prompt == "delete":
                 handle_prompt(text_prompt)
+                await self.app.convo_update(text_prompt, "Memory file deleted!")
+                self.text = ""
+                return
+
+            if 'bye' in text_prompt.lower():
+                worker = self.app.process_prompt(prompt)
+                await worker.wait()
+                handler = worker.result
+                response = handler.response
+                await self.app.convo_update(text_prompt, response)
                 self.text = ""
                 return
             
@@ -71,6 +85,17 @@ class SiriInput(TextArea):
                 await self.app.terminal_update(data)
 
             await spinner.remove()
+
+            if voice_output:
+                eleven_call(response)
+
+                subprocess.Popen(
+                    [
+                        "mpv",
+                        "--no-terminal",
+                        "output.mp3",
+                    ]
+                )
 
             self.text = ""
             
@@ -106,6 +131,15 @@ class Player_Button(Button):
         else:
             player.pause()
             self.paused = True
+
+class Voice_Acivation_Button(Button):
+    def on_button_pressed(self, event: Button.Pressed):
+        global voice_output
+
+        if voice_output:
+            voice_output = False
+        else:
+            voice_output = True
 
 
 class SiriApp(App):
@@ -151,6 +185,18 @@ class SiriApp(App):
         border: round blue;
         }
     
+    #controls {
+        width: 100%;
+        height: 5;
+        layout: horizontal;
+        align: center middle;
+        }
+    
+    #controls Button {
+        height: 3;
+        margin: 0 1;
+        }
+    
     .user{
         text-align: right;
         padding-left: 35;
@@ -172,8 +218,12 @@ class SiriApp(App):
                 yield Static("Terminal \n")
 
         yield SiriInput(placeholder="Type here...", id="user")
-        yield SiriVoice(label="Voice",  id="SiriInput")
-        yield Player_Button(label="Pause/Play", id="Player")
+
+        # Button tray:
+        with Horizontal(id="controls"):
+            yield SiriVoice(label="Voice",  id="SiriInput")
+            yield Player_Button(label="Pause/Play", id="Player")
+            yield Voice_Acivation_Button(label="Toggle Voice", id="Voice_Output")
 
 
 

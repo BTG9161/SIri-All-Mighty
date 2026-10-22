@@ -15,7 +15,7 @@ def store_session(session):
     """
     This functions is used to store sessions.
     ARGS:
-        session: This is the current sessions that needs to be stored.
+        session: This is the current session that needs to be stored.
     """
     
     cur_session_path = Path(session)

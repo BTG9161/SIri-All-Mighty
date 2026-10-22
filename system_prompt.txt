@@ -14,6 +14,9 @@ RULES:
 - You will never return empty string.
 - Ask the user for their OS before giving them commands to run only when you require to know the OS
 
+TOOL CALLING:
+- Never call a tool if an error occurs with it, call it only after the user's response.
+
 ADITIONAL INFORMATION:
     The default working directory is */Siri
 

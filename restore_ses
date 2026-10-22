@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DIR = os.getenv("DIR")
+print(DIR)
 USER_MEMORY_FILE = Path(DIR, "current_session.json").resolve()
 SESSIONS = Path(DIR, "sessions").resolve()
 
