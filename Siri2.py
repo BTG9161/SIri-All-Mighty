@@ -32,6 +32,7 @@ class handle_prompt():
         self.prompt = prompt
         self.response = None
         self.terminal = []
+        self.tool_calls = None
         self.process_prompt()
 
     def process_prompt(self):
@@ -82,6 +83,14 @@ class handle_prompt():
         
         # Check for tool calls
         if response.choices[0].message.tool_calls:
+            if response.choices[0].message.tool_calls:
+                self.tool_calls = json.dumps(
+                    [
+                        tool_call.model_dump()
+                        for tool_call in response.choices[0].message.tool_calls
+                    ],
+                    indent=2
+                )
             # Execute each tool call (using the helper function from step 2)
             for tool_call in response.choices[0].message.tool_calls:
                 function_response = execute_tool_call(tool_call)

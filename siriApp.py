@@ -1,4 +1,3 @@
-import json
 import subprocess
 from queue import Queue
 from textual import work
@@ -9,7 +8,7 @@ from textual.app import App, ComposeResult
 from functions.execute_tool_call import player
 from functions.eleven_call import eleven_call
 from textual.containers import ScrollableContainer, Horizontal
-from textual.widgets import Static, Markdown, TextArea, Button, LoadingIndicator
+from textual.widgets import Static, Markdown, TextArea, Button
 
 input_queue = Queue()
 
@@ -186,14 +185,13 @@ class SiriApp(App):
         }
     
     #controls {
-        width: 100%;
-        height: 5;
+        height: 4;
+        dock: bottom;
         layout: horizontal;
         align: center middle;
         }
     
     #controls Button {
-        height: 3;
         margin: 0 1;
         }
     
@@ -224,7 +222,6 @@ class SiriApp(App):
             yield SiriVoice(label="Voice",  id="SiriInput")
             yield Player_Button(label="Pause/Play", id="Player")
             yield Voice_Acivation_Button(label="Toggle Voice", id="Voice_Output")
-
 
 
 if __name__ == "__main__":

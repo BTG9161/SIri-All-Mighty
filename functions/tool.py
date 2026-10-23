@@ -8,6 +8,14 @@ def tool(tool):
     params.pop("title", None)
     params["additionalProperties"] = False
 
+    req = params["required"]
+    if "self" in req:
+        req.remove("self")
+
+    props = tool["function"]["parameters"]["properties"]
+    if "self" in props:
+        props.pop("self", None)
+
     for prop in params.get("properties", {}).values():
         prop.pop("title", None)
     
