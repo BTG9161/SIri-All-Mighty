@@ -1,8 +1,11 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
+load_dotenv()
+DIR = os.getenv("DIR")
 
-memory_file = Path("MEMORY.md")
+memory_file = Path(DIR, "MEMORY.md").resolve()
 
 def memory(memory_piece: str, importance: int) -> str:
     """
@@ -15,12 +18,16 @@ def memory(memory_piece: str, importance: int) -> str:
     """
     global memory_file
 
-    with memory_file.open('r', encoding="utf-8") as f:
-        memories = f.read()
-        if not "# MEMORIES" in memories:
-            with memory_file.open('w', encoding="utf-8") as file:
-                file.write("# MEMORIES \n")
     try:
+        if not memory_file.exists(): # Create the file  if doesn't exist.
+            memory_file.write_text("# Memories", encoding="utf-8")
+        
+        with memory_file.open('r', encoding="utf-8") as f:
+            memories = f.read()
+            if not "# MEMORIES" in memories: # Make the heading if not there, like deleted all the text.
+                with memory_file.open('w', encoding="utf-8") as file:
+                    file.write("# MEMORIES \n")
+        
         with memory_file.open('a', encoding="utf-8") as file:
             file.write(f"\n- {memory_piece}, Importance: {importance}")
 
@@ -46,3 +53,8 @@ def delete_memory() -> str:
     """
     To delete a specific memory or """
 
+if __name__=="__main__":
+    with memory_file.open('r', encoding="utf-8") as file:
+        file = file.read()
+
+    print(len(file))

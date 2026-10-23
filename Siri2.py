@@ -10,6 +10,7 @@ from functions.eleven_call import eleven_call
 from functions.agent_call import agent_call, final_call
 from functions.execute_tool_call import execute_tool_call
 from functions.wake import global_listener, input_queue, type_done
+from functions.special_prompts import build_system_prompt
 
 # Load environment variables (API keys, etc.)
 prompt_list = []
@@ -18,7 +19,6 @@ stt = threading.Thread(target=STT_loop, daemon=True) # daemon=True marks a threa
 stt.start()
 
 USER_MEMORY_FILE = "current_session.json"
-memory = memory_access()
 
 
 def _resource_path(relative_path):
@@ -64,10 +64,7 @@ class handle_prompt():
 
         else:
             # First run: define system prompts
-            with open(_resource_path("system_prompt.txt")) as f:
-                system_prompt = f.read()
-                system_prompt += f"""Long-term:
-                {memory}"""
+            system_prompt = build_system_prompt()
 
             # Initialize conversation with system prompt
             user_messages = [
