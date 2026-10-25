@@ -116,7 +116,6 @@ class SiriVoice(Button):
         siriInput.insert(voice_prompt)
         self.loading = False
 
-
 class Player_Button(Button):
     def __init__(self, *args, **kwargs): # Take the args and kwargs
         super().__init__(*args, **kwargs)# And pass them to the parent class

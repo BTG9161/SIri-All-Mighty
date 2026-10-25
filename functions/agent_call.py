@@ -14,7 +14,7 @@ def agent_call(messages):
     for attempt in range(max_attempts): # attempt = 0, 1, 2,...
         try:
             response = client.chat.completions.create(
-                    model="openai/gpt-oss-120b",
+                    model="qwen/qwen3.8-27b",
                     messages=messages,
                     tools=tools,
                     temperature=0.3,  # Keep temperature between 0.0 - 0.5 for best tool calling results

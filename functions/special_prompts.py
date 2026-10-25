@@ -11,7 +11,7 @@ parts = []
 
 def build_system_prompt():
     for file in files:
-        path_to_file = Path(DIR, file)
+        path_to_file = Path(DIR, file).resolve()
         parts.append(path_to_file.read_text(encoding="utf-8"))
 
     memories = memory_access()

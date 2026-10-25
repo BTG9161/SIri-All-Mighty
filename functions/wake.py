@@ -1,6 +1,6 @@
-from pynput import keyboard
-import threading
 import queue
+import threading
+from pynput import keyboard
 
 current = set()
 wake_key = {keyboard.Key.ctrl, keyboard.Key.shift}
