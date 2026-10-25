@@ -79,6 +79,7 @@ uv run telebot.py
 - `SETUP/` holds a helper script for finding your **Telegram** chat ID.
 - Don't use it if you don't trust it, it has terminal access. Or you can remove it by running `rm functions/terminal_access.py` along with editing
 `mcp_tools_creation.py` and `execute_tool_call.py`.
+- The releases may be outdated and may not reflect the current state of the project.
 
 ## Agent in Action
 ![alt text](image-4.png)
