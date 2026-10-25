@@ -45,7 +45,7 @@ cd SIri-All-Mighty
 uv sync
 ./install.sh
 ```
-MAKE SURE TO RUN `./install.sh` frmo INSIDE the DIRECTORY provided in DIR.
+MAKE SURE TO RUN `./install.sh` FROM INSIDE the DIRECTORY provided in DIR.
 `./install.sh` makes you a global script for restoring sessions and creates `.config` and files, for older build. If you don't have `uv`, copy the dependencies from `pyproject.toml` into a `requirements.txt`, and then `pip install -r requirements.txt instead`.
 
 Create a `.env`:
