@@ -45,7 +45,8 @@ cd SIri-All-Mighty
 uv sync
 ./install.sh
 ```
-`./install.sh` makes you a global script for restoring sessions, for older build. If you don't have `uv`, copy the dependencies from `pyproject.toml` into a `requirements.txt`, and then `pip install -r requirements.txt instead`.
+MAKE SURE TO RUN `./install.sh` frmo INSIDE the DIRECTORY provided in DIR.
+`./install.sh` makes you a global script for restoring sessions and creates `.config` and files, for older build. If you don't have `uv`, copy the dependencies from `pyproject.toml` into a `requirements.txt`, and then `pip install -r requirements.txt instead`.
 
 Create a `.env`:
 ```
@@ -80,7 +81,6 @@ uv run telebot.py
 `mcp_tools_creation.py` and `execute_tool_call.py`.
 
 ## Agent in Action
-![alt text](image.png)
 ![alt text](image-4.png)
 ![alt text](image-1.png)
 ![alt text](image-2.png)
