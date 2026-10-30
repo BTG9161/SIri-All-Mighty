@@ -1,9 +1,10 @@
+import threading
 import subprocess
 from queue import Queue
 from textual import work
 from functions.STT import STT
 from Siri2 import handle_prompt
-from functions.player import Player
+from functions.wake import WakeWord
 from textual.app import App, ComposeResult
 from functions.execute_tool_call import player
 from functions.eleven_call import eleven_call
@@ -11,8 +12,14 @@ from textual.containers import ScrollableContainer, Horizontal
 from textual.widgets import Static, Markdown, TextArea, Button
 
 input_queue = Queue()
+wakeword = WakeWord()
+wakeword_detection = threading.Thread(target=wakeword.passive_wakeword_detection)
+
+wakeword_detection.start()
 
 voice_output = False
+voice_convo = False
+
 
 class Spinner(Static):
     def on_mount(self):
@@ -43,7 +50,6 @@ class SiriInput(TextArea):
 
         if event.key == "enter":
             event.prevent_default()
-            
 
             text_prompt = self.text
 
@@ -139,6 +145,13 @@ class Voice_Acivation_Button(Button):
         else:
             voice_output = True
 
+class Voice_Convo(Button):
+    def on_button_pressed(self, event: Button.Pressed):
+        global voice_convo, voice_output
+        
+        voice_convo = True
+        voice_output = True
+
 
 class SiriApp(App):
     def __init__(self):
@@ -150,6 +163,73 @@ class SiriApp(App):
         handler = handle_prompt(prompt)
         return handler
 
+    @work
+    async def VoiceConvo(self):
+        global prompt
+    
+        terminal = self.query_one("#terminal", ScrollableContainer)
+        siri_input = self.query_one("#user")
+        spinner = Spinner()
+
+        if voice_convo == True:
+            if wakeword.wake_done:
+                convo_voice_prompt = STT()
+                print(wakeword.wake_done)
+                siri_input.text = prompt = convo_voice_prompt
+        
+                if prompt == "delete":
+                    handle_prompt(prompt)
+                    await siri_input.app.convo_update(prompt, "Memory file deleted!")
+                    siri_input.text = ""
+                    return
+        
+                if 'bye' in prompt.lower():
+                    worker = siri_input.app.process_prompt(prompt)
+                    await worker.wait()
+                    handler = worker.result
+                    response = handler.response
+                    await siri_input.app.convo_update(prompt, response)
+                    siri_input.text = ""
+                    return
+                
+                siri_input.text = prompt
+        
+                await terminal.mount(spinner)
+                if prompt is None:
+                    pass
+                else:
+                    worker = siri_input.app.process_prompt(prompt)
+                    await worker.wait()
+                    handler = worker.result
+        
+                response = handler.response
+        
+                if handler.terminal == None:
+                    terminal_data = ""
+                else:
+                    terminal_data = handler.terminal
+                
+                await siri_input.app.convo_update(prompt, response)
+                for data in terminal_data:
+                    await siri_input.app.terminal_update(data)
+        
+                await spinner.remove()
+        
+                if voice_output:
+                    eleven_call(response)
+        
+                    subprocess.Popen(
+                        [
+                            "mpv",
+                            "--no-terminal",
+                            "output.mp3",
+                        ]
+                    )
+        
+                siri_input.text = ""
+                wakeword.wake_received = True
+
+
     async def convo_update(self, prompt, response):
         siri = self.query_one("#convo", ScrollableContainer)
         await siri.mount(Static("user> " + prompt, classes="user"))
@@ -160,6 +240,8 @@ class SiriApp(App):
     async def terminal_update(self, terminal_data):
         terminal = self.query_one("#terminal", ScrollableContainer)
         await terminal.mount(Markdown(terminal_data + "\n", classes="terminal"))
+
+        terminal.scroll_end(animate=True)
 
     # When we run the SiriApp, it first reads the CSS as a set of rules and then creates the container according to the rules
     CSS = """
@@ -221,8 +303,11 @@ class SiriApp(App):
             yield SiriVoice(label="Voice",  id="SiriInput")
             yield Player_Button(label="Pause/Play", id="Player")
             yield Voice_Acivation_Button(label="Toggle Voice", id="Voice_Output")
+            yield Voice_Convo(label="Voice Convo", id="Voice_Convo")
 
 
 if __name__ == "__main__":
-    SiriApp().run()
+    App = SiriApp()
+    VoiceConvo_thread = threading.Thread(target=App.VoiceConvo)
+    App.run()
 

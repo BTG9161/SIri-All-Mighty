@@ -3,7 +3,7 @@ from pathlib import Path
 from telegram import Update
 from dotenv import load_dotenv
 from telegram.ext import ContextTypes
-from functions.sessions import store_session
+from tools.sessions import store_session
 from telefunc.telebot_wrapper import command
 
 load_dotenv()

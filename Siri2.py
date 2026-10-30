@@ -2,19 +2,14 @@ import os
 import sys
 import json
 import threading
-import subprocess
 from functions.STT import STT_loop
-from functions.memory import memory_access
-from functions.sessions import store_session
-from functions.eleven_call import eleven_call
+from tools.sessions import store_session
 from functions.agent_call import agent_call, final_call
 from functions.execute_tool_call import execute_tool_call
-from functions.wake import global_listener, input_queue, type_done
 from functions.special_prompts import build_system_prompt
 
-# Load environment variables (API keys, etc.)
+
 prompt_list = []
-listener = global_listener()
 stt = threading.Thread(target=STT_loop, daemon=True) # daemon=True marks a thread as a background/daemon thread — it tells Python's threading system
 stt.start()
 
@@ -35,14 +30,7 @@ class handle_prompt():
         self.tool_calls = None
         self.process_prompt()
 
-    def process_prompt(self):
-        # Take user input
-
-        chunks = []
-
-        while not input_queue.empty():
-            chunks.append(input_queue.get()) # .get() fetches the next item from the queue and removes it from the queue. If the queue is empty, it will block until an item is available.
-        
+    def process_prompt(self):        
         if not self.prompt.strip():
             return 
         

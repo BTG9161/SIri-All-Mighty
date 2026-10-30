@@ -1,13 +1,13 @@
 # Run this whenever a new tool is created, along with updating execute_tool_call if the function name is changed.
 
 import json 
-from memory import memory
-from player import Player
-from read_file import read_file
-from write_file import write_file
-from delete_file import delete_file
+from tools.memory import memory
+from tools.player import Player
+from tools.read_file import read_file
+from tools.write_file import write_file
+from tools.delete_file import delete_file
 from mcp.server.fastmcp import FastMCP
-from terminal_access import terminal_access
+from tools.terminal_access import terminal_access
 
 
 mcp = FastMCP("terminal")

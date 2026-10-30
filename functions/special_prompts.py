@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from functions.memory import memory_access
+from tools.memory import memory_access
 
 load_dotenv()
 DIR = os.getenv("DIR")

@@ -1,10 +1,10 @@
 import json
-from functions.player import Player
-from functions.memory import memory
-from functions.read_file import read_file
-from functions.write_file import write_file
-from functions.delete_file import delete_file
-from functions.terminal_access import terminal_access
+from tools.player import Player
+from tools.memory import memory
+from tools.read_file import read_file
+from tools.write_file import write_file
+from tools.delete_file import delete_file
+from tools.terminal_access import terminal_access
 
 player = Player()
 

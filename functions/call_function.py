@@ -1,6 +1,6 @@
-from functions.delete_file import delete_file
-from functions.write_file import write_file
-from functions.terminal_access import terminal_access
+from tools.delete_file import delete_file
+from tools.write_file import write_file
+from tools.terminal_access import terminal_access
 
 
 def call_function(function="", wd=".", fp=None, content="", terminal=""):

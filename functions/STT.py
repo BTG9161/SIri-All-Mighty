@@ -6,7 +6,6 @@ from groq import Groq
 import sounddevice as sd
 from dotenv import load_dotenv
 from scipy.io.wavfile import write
-from .wake import wake_done, input_queue
 
 vad = webrtcvad.Vad(3) # aggressiveness 0-3 
 
@@ -85,7 +84,6 @@ def STT():
         )
 
     prompt = transcription.text
-    input_queue.put(prompt)
     print(prompt)
     return prompt
 
