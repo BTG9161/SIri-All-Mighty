@@ -28,7 +28,7 @@ class WakeWord():
                 predictions = model.predict(audio_frame)
 
                 for _, score in predictions.items():
-                    if score > 0:
+                    if score > 0.8:
                         self.wake_done = True
                         break
 
