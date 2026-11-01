@@ -1,50 +1,36 @@
-import sounddevice
-import numpy as np
 from queue import Queue
 from openwakeword.model import Model
+from functions.InputStream import SoundDevice
 
 
-sr=16000
-frame_duration = 80
-frame_size = int(sr * frame_duration / 1000)
-frames = Queue()
-Threshold = 0.8
+sd = SoundDevice()
 
 model = Model(
     wakeword_model_paths=["/home/btg/Siri/.venv/lib/python3.12/site-packages/openwakeword/resources/models/alexa_v0.1.onnx"]
 )
 
-def callback(indata, frames_count, time_info, status):
-    frames.put(indata.copy().flatten())
-
 
 class WakeWord():
-    def __init__(self):
+    def __init__(self, audio_input):
+        self.audio_input = audio_input
         self.wake_done = False
         self.wake_received = False
 
     def passive_wakeword_detection(self): # This will be in a thread in siriApp        
-        try:        
-            with sounddevice.InputStream(
-                samplerate=sr,
-                blocksize=frame_size,
-                channels=1,
-                dtype='int16',
-                callback=callback
-            ):
-                while True:
-                    if self.wake_received:
-                        self.wake_done = False
-                        self.wake_received = False
+        try:
+            while True:
+                if self.wake_received:
+                    self.wake_done = False
+                    self.wake_received = False
 
-                    audio_frame = frames.get()
+                audio_frame = self.audio_input.wake_queue.get()
 
-                    predictions = model.predict(audio_frame)
+                predictions = model.predict(audio_frame)
 
-                    for _, score in predictions.items():
-                        if score > Threshold:
-                            self.wake_done = True
-                            break
+                for _, score in predictions.items():
+                    if score > 0:
+                        self.wake_done = True
+                        break
 
         except Exception as e:
             self.wake_done = False
