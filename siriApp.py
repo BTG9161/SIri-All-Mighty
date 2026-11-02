@@ -110,14 +110,16 @@ class SiriInput(TextArea):
 
 
 class SiriVoice(Button):
-    def on_button_pressed(self, event: Button.Pressed):
+    async def on_button_pressed(self, event: Button.Pressed):
         self.loading = True
         global voice_prompt
         
         voice_prompt = ""
         
-        voice_prompt = STT(audio_input)
-        
+        worker = self.app.stt_worker()
+        await worker.wait()
+
+        voice_prompt = worker.result
 
         siriInput = self.app.query_one(SiriInput)
         siriInput.insert(voice_prompt)
@@ -186,11 +188,11 @@ class SiriApp(App):
 
         spinner = Spinner()
         terminal = self.query_one("#terminal", ScrollableContainer)
-        siri_input = self.query_one("#user", SiriInput)
+        siri_input = self.query_one("#user",SiriInput)
 
         while voice_convo:
             if not wakeword.wake_done:
-                await asyncio.sleep(0.1)
+                await asyncio.sleep(0.1) # We use asyncio because we are in an async function, and we want this to also to be async, and time.sleep() is a blocking function.
                 continue
             else:
                 stt = self.stt_worker()
