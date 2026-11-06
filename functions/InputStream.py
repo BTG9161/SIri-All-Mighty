@@ -35,7 +35,7 @@ class SoundDevice():
         if self.STT_active.is_set():
             self.distribute(self.STT_queue, frame)
 
-    def InputStream(self):
+    def start(self):
         self.stream = sd.InputStream(
             samplerate=sr,
             blocksize=frame_size,

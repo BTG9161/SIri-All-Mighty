@@ -1,4 +1,4 @@
-from queue import Queue
+import time
 from openwakeword.model import Model
 from functions.InputStream import SoundDevice
 
@@ -15,11 +15,15 @@ class WakeWord():
         self.audio_input = audio_input
         self.wake_done = False
         self.wake_received = False
+        self.predict = True
 
     def passive_wakeword_detection(self): # This will be in a thread in siriApp        
         try:
             while True:
                 if self.wake_received:
+                    while not self.audio_input.wake_queue.empty():
+                        self.audio_input.wake_queue.get_nowait()
+                    
                     self.wake_done = False
                     self.wake_received = False
 
@@ -30,6 +34,7 @@ class WakeWord():
                 for _, score in predictions.items():
                     if score > 0.8:
                         self.wake_done = True
+                        time.sleep(1)
                         break
 
         except Exception as e:

@@ -21,7 +21,7 @@ class Player:
         
         query = f"ytsearch1:{SONG}"
         song = subprocess.check_output([
-            "yt-dlp", "--impersonate", "chrome",
+            "yt-dlp",
             "-f", "bestaudio",
             "-g",
             query,

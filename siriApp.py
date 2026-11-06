@@ -15,7 +15,6 @@ from textual.widgets import Static, Markdown, TextArea, Button
 
 audio_input = SoundDevice()
 wakeword = WakeWord(audio_input)
-audio_input.InputStream()
 
 input_queue = Queue()
 
@@ -115,16 +114,21 @@ class SiriVoice(Button):
         global voice_prompt
         
         voice_prompt = ""
+
+        try:
+            audio_input.start()
+            worker = self.app.stt_worker()
+            await worker.wait()
+
+            voice_prompt = worker.result
+
+            siriInput = self.app.query_one(SiriInput)
+            siriInput.insert(voice_prompt)
+
+        finally:
+            audio_input.stop()
+            self.loading = False
         
-        worker = self.app.stt_worker()
-        await worker.wait()
-
-        voice_prompt = worker.result
-
-        siriInput = self.app.query_one(SiriInput)
-        siriInput.insert(voice_prompt)
-        self.loading = False
-
 class Player_Button(Button):
     def __init__(self, *args, **kwargs): # Take the args and kwargs
         super().__init__(*args, **kwargs)# And pass them to the parent class
@@ -155,6 +159,8 @@ class Voice_Convo(Button):
         if voice_convo:
             voice_convo = False
             voice_output = False
+            audio_input.stop()
+
         else:
             voice_convo = True
             voice_output = True
@@ -179,6 +185,7 @@ class SiriApp(App):
 
     @work(thread=True)
     def wakeword_worker(self):
+        audio_input.start()
         wakeword.passive_wakeword_detection()
         return wakeword.wake_done
 
@@ -194,44 +201,48 @@ class SiriApp(App):
             if not wakeword.wake_done:
                 await asyncio.sleep(0.1) # We use asyncio because we are in an async function, and we want this to also to be async, and time.sleep() is a blocking function.
                 continue
+
+            wakeword.predict = True
+            stt = self.stt_worker()
+            await stt.wait()
+            voice_prompt = stt.result
+            siri_input.text = voice_prompt
+
+            await terminal.mount(spinner)
+            worker = self.process_prompt(voice_prompt)
+
+            await worker.wait()
+            handler = worker.result
+
+            response = handler.response
+
+            if handler.terminal == None:
+                terminal_data = ""
             else:
-                stt = self.stt_worker()
-                await stt.wait()
-                voice_prompt = stt.result
-                siri_input.insert(voice_prompt)
+                terminal_data = handler.terminal
 
-                await terminal.mount(spinner)
-                worker = self.process_prompt(voice_prompt)
+            await self.convo_update(voice_prompt, response)
+            for data in terminal_data:
+                await self.terminal_update(data)
+        
+            await spinner.remove()
 
-                await worker.wait()
-                handler = worker.result
+            if voice_output:
+                eleven_call(response)
 
-                response = handler.response
+                subprocess.Popen(
+                    [
+                        "mpv",
+                        "--no-terminal",
+                        "output.mp3",
+                    ]
+                )
 
-                if handler.terminal == None:
-                    terminal_data = ""
-                else:
-                    terminal_data = handler.terminal
+            siri_input.text = ""
 
-                await self.convo_update(voice_prompt, response)
-                for data in terminal_data:
-                    await self.terminal_update(data)
-            
-                await spinner.remove()
-
-                if voice_output:
-                    eleven_call(response)
-
-                    subprocess.Popen(
-                        [
-                            "mpv",
-                            "--no-terminal",
-                            "output.mp3",
-                        ]
-                    )
-
-                siri_input.text = ""
-                wakeword.wake_received = True
+            wakeword.wake_received = True
+            while wakeword.wake_received:
+                await asyncio.sleep(0.05)
 
     async def convo_update(self, prompt, response):
         siri = self.query_one("#convo", ScrollableContainer)
@@ -308,5 +319,8 @@ class SiriApp(App):
 
 
 if __name__ == "__main__":
-    SiriApp().run()
+    try:
+        SiriApp().run()
+    except Exception as e:
+        print(f"Error: {e}")
 
